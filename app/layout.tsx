@@ -4,6 +4,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -37,9 +38,11 @@ export default function RootLayout({
       </head>
       <body>
         <LanguageProvider>
-          <Navigation />
-          {children}
-          <Footer />
+          <AuthProvider>
+            <Navigation />
+            {children}
+            <Footer />
+          </AuthProvider>
         </LanguageProvider>
       </body>
     </html>

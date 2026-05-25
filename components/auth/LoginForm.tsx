@@ -64,22 +64,28 @@ export default function LoginForm() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      const result = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || "Login failed");
+      if (result?.error) {
+        setError(
+          lang === "zh" ? "邮箱或密码错误" :
+          lang === "fr" ? "Identifiants invalides" :
+          "Invalid credentials"
+        );
         return;
       }
 
       router.push("/");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+    } catch {
+      setError(
+        lang === "zh" ? "发生错误，请重试" :
+        lang === "fr" ? "Une erreur est survenue" :
+        "An error occurred"
+      );
     } finally {
       setIsLoading(false);
     }

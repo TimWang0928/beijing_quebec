@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function RegisterForm() {
   const { lang } = useLanguage();
@@ -170,7 +171,13 @@ export default function RegisterForm() {
 
         <div className="auth-divider">ou</div>
 
-        <button className="btn-google">{c.google}</button>
+        <button
+          type="button"
+          className="btn-google"
+          onClick={() => signIn("google", { callbackUrl: "/" })}
+        >
+          {c.google}
+        </button>
 
         <div className="auth-footer">
           <p>

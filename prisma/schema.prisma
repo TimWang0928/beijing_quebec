@@ -14,8 +14,10 @@ model User {
   emailVerified DateTime?
   password      String?   // Hashed password for credentials login
   image         String?
-  role          String    @default("user")
-  accounts      Account[]
+  role                String    @default("user")
+  membershipTier      String    @default("NONE")  // NONE | REGULAR | FAMILY | YOUTH | HONORARY | SUPPORTING
+  membershipExpiresAt DateTime?
+  accounts            Account[]
   sessions      Session[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
