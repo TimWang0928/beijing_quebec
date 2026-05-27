@@ -5,6 +5,8 @@ import Footer from "@/components/Footer";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { ToastProvider } from "@/context/ToastContext";
+import Toaster from "@/components/ui/Toaster";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -39,9 +41,12 @@ export default function RootLayout({
       <body>
         <LanguageProvider>
           <AuthProvider>
-            <Navigation />
-            {children}
-            <Footer />
+            <ToastProvider>
+              <Navigation />
+              {children}
+              <Footer />
+              <Toaster />
+            </ToastProvider>
           </AuthProvider>
         </LanguageProvider>
       </body>
