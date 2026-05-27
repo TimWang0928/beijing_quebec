@@ -3,10 +3,22 @@
 import Link from "next/link";
 import { CONTENT } from "@/context/CONTENT";
 import { useLanguage } from "@/context/LanguageContext";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function MembershipPage() {
   const { lang } = useLanguage();
+  const { status } = useSession();
+  const router = useRouter();
   const c = CONTENT[lang as keyof typeof CONTENT];
+
+  const handleJoin = () => {
+    if (status === "authenticated") {
+      router.push("/membership/apply");
+    } else {
+      router.push("/auth/login?callbackUrl=/membership/apply");
+    }
+  };
 
   return (
     <main className="page">
@@ -69,10 +81,9 @@ export default function MembershipPage() {
             <p className="sec-sub" style={{ maxWidth: "540px", margin: "0 auto 32px" }}>
               {c.mbJoinDesc}
             </p>
-            <Link href="/contact" className="btn-gold">
+            <button onClick={handleJoin} className="btn-gold">
               {c.mbJoinBtn}
-            </Link>
-          </div>
+            </button>          </div>
         </div>
       </section>
     </main>

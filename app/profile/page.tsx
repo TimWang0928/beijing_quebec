@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import { useToast } from "@/context/ToastContext";
+import Link from "next/link";
 
 interface UserProfile {
   id: string;
@@ -353,6 +354,17 @@ export default function ProfilePage() {
                     : (lang === "zh" ? "○ 无效" : lang === "fr" ? "○ Inactif" : "○ Inactive")}
                 </span>
               </div>
+              {!isActive && (
+                <div className="profile-field profile-become-member-row">
+                  <Link
+                    href="/membership/apply"
+                    className="profile-become-member-btn"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                    {lang === "zh" ? "成为会员" : lang === "fr" ? "Devenir membre" : "Become a Member"}
+                  </Link>
+                </div>
+              )}
             </div>
           </section>
 
