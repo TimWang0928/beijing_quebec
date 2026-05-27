@@ -26,6 +26,9 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Association de Beijing du Québec · 魁北克北京同乡会",
   description: "Communauté pékinoise au cœur de Montréal — culture, réseautage et entraide depuis 2013.",
+  icons: {
+    icon: "/images/beijing_logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -36,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${playfair.variable} ${notoSerifSc.variable} ${dmSans.variable}`}>
       <head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/images/beijing_logo.png" type="image/png" />
       </head>
       <body>
         <LanguageProvider>
