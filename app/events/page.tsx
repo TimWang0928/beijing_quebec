@@ -40,7 +40,7 @@ export default function EventsPage() {
               entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                   entry.target.classList.add("on");
-                  observer.unobserve(entry.target);
+                  observer!.unobserve(entry.target);
                 }
               });
             },
