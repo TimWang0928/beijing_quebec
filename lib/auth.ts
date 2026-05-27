@@ -124,7 +124,7 @@ export const authOptions: NextAuthOptions = {
             },
           },
         });
-      } else if (!existing.accounts.some((a) => a.provider === "google")) {
+      } else if (!existing.accounts.some((a: any) => a.provider === "google")) {
         await prisma.account.create({
           data: {
             userId: existing.id,
