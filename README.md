@@ -24,8 +24,6 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
@@ -34,3 +32,36 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## HTTPS With Let's Encrypt
+
+This repo supports a single-VPS deployment with Nginx and free HTTPS certificates from Let's Encrypt.
+
+Start the app with your production values:
+
+```bash
+NEXTAUTH_SECRET='your_nextauth_secret' \
+NEXTAUTH_URL='https://beijingquebec.org' \
+docker compose up -d
+```
+
+Issue the certificate after your domain points to the VPS:
+
+```bash
+CERTBOT_EMAIL='you@example.com' \
+CERTBOT_DOMAIN='beijingquebec.org' \
+CERTBOT_WWW_DOMAIN='www.beijingquebec.org' \
+npm run ssl:issue
+```
+
+Restart Nginx so it switches to the HTTPS config:
+
+```bash
+docker compose restart nginx
+```
+
+Renew later with:
+
+```bash
+npm run ssl:renew
+```

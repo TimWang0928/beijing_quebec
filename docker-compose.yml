@@ -21,11 +21,13 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    env_file:
-      - .env.local
     environment:
       DATABASE_URL: postgresql://admin:12345@db:5432/beijing?schema=public
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?set NEXTAUTH_SECRET before running docker compose}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:?set NEXTAUTH_URL before running docker compose}
       NEXT_TELEMETRY_DISABLED: "1"
+      GOOGLE_ID: ${GOOGLE_ID:-}
+      GOOGLE_SECRET: ${GOOGLE_SECRET:-}
 
   nginx:
     image: nginx:1.27-alpine
@@ -35,8 +37,35 @@ services:
         condition: service_started
     ports:
       - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/default.conf:/etc/nginx/custom/default-http.conf:ro
+      - ./nginx/default-ssl.conf:/etc/nginx/custom/default-ssl.conf:ro
+      - certbot-webroot:/var/www/certbot
+      - letsencrypt:/etc/letsencrypt
+    command:
+      - /bin/sh
+      - -c
+      - |
+        if [ -f /etc/letsencrypt/live/beijingquebec.org/fullchain.pem ]; then
+          cp /etc/nginx/custom/default-ssl.conf /etc/nginx/conf.d/default.conf;
+        else
+          cp /etc/nginx/custom/default-http.conf /etc/nginx/conf.d/default.conf;
+        fi
+        exec nginx -g "daemon off;"
+
+  certbot:
+    image: certbot/certbot:latest
+    profiles:
+      - certbot
+    depends_on:
+      nginx:
+        condition: service_started
+    volumes:
+      - certbot-webroot:/var/www/certbot
+      - letsencrypt:/etc/letsencrypt
 
 volumes:
   pgdata:
+  certbot-webroot:
+  letsencrypt:
