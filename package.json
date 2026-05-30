@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "build:image": "docker build -t beijing-web:latest .",
-    "docker:publish": "docker buildx build --platform ${DOCKER_PLATFORMS:-linux/amd64} -t ${DOCKERHUB_IMAGE:-timwangdocker/beijing-web:latest} --push ."
+    "docker:publish": "docker buildx build --platform ${DOCKER_PLATFORMS:-linux/amd64} -t ${DOCKERHUB_IMAGE:-timwangdocker/beijing-web:latest} --push .",
+    "update": "git pull && docker compose up -d"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
