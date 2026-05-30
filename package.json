@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma migrate deploy && next build",
+    "build": "next build",
+    "db:migrate": "prisma migrate deploy",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "build:image": "docker build -t beijing-web:latest .",
+    "docker:publish": "docker buildx build --platform ${DOCKER_PLATFORMS:-linux/amd64} -t ${DOCKERHUB_IMAGE:-timwangdocker/beijing-web:latest} --push ."
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
