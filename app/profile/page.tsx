@@ -20,6 +20,16 @@ interface UserProfile {
   updatedAt: string;
 }
 
+interface PaymentRecord {
+  id: string;
+  cloverChargeId: string;
+  amount: number;
+  currency: string;
+  tierApplied: string;
+  status: string;
+  createdAt: string;
+}
+
 const TIER_LABELS: Record<string, { fr: string; zh: string; en: string; color: string }> = {
   NONE:       { fr: "Aucun",          zh: "无",     en: "None",       color: "tier-none" },
   REGULAR:    { fr: "Régulier",       zh: "普通",   en: "Regular",    color: "tier-regular" },
@@ -57,6 +67,13 @@ const CONTENT = {
     roleAdmin: "Administrateur",
     loginRequired: "Connexion requise",
     loading: "Chargement…",
+    paymentHistory: "Historique des paiements",
+    noPayments: "Aucun paiement enregistré.",
+    paymentDate: "Date",
+    paymentAmount: "Montant",
+    paymentTier: "Niveau",
+    paymentRef: "Référence",
+    paymentStatus: "Statut",
   },
   zh: {
     title: "我的资料",
@@ -85,6 +102,13 @@ const CONTENT = {
     roleAdmin: "管理员",
     loginRequired: "需要登录",
     loading: "加载中…",
+    paymentHistory: "付款记录",
+    noPayments: "暂无付款记录。",
+    paymentDate: "日期",
+    paymentAmount: "金额",
+    paymentTier: "会员类别",
+    paymentRef: "交易编号",
+    paymentStatus: "状态",
   },
   en: {
     title: "My Profile",
@@ -113,6 +137,13 @@ const CONTENT = {
     roleAdmin: "Admin",
     loginRequired: "Login required",
     loading: "Loading…",
+    paymentHistory: "Payment History",
+    noPayments: "No payments on record.",
+    paymentDate: "Date",
+    paymentAmount: "Amount",
+    paymentTier: "Tier",
+    paymentRef: "Reference",
+    paymentStatus: "Status",
   },
 };
 
@@ -129,6 +160,7 @@ export default function ProfilePage() {
   const { lang } = useLanguage();
   const { showToast } = useToast();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [payments, setPayments] = useState<PaymentRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingName, setEditingName] = useState(false);
   const [nameValue, setNameValue] = useState("");
@@ -173,6 +205,11 @@ export default function ProfilePage() {
             showToast(c.saveError, "error");
           })
           .finally(() => setLoading(false));
+        // Fetch payments in parallel (non-blocking)
+        fetch("/api/user/payments")
+          .then((r) => r.ok ? r.json() : [])
+          .then((data) => { if (Array.isArray(data)) setPayments(data); })
+          .catch(() => {/* ignore payment fetch errors */});
       }, 100);
       return () => clearTimeout(timer);
     }
@@ -397,6 +434,57 @@ export default function ProfilePage() {
           </section>
 
         </div>
+      </div>
+
+      {/* Payment History */}
+      <div className="profile-content profile-content-payments container">
+        <section className="profile-section profile-section-full">
+          <div className="profile-section-header">
+            <svg className="profile-section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>
+            </svg>
+            <h2 className="profile-section-title">{c.paymentHistory}</h2>
+          </div>
+          <div className="profile-card">
+            {payments.length === 0 ? (
+              <div className="profile-no-payments">{c.noPayments}</div>
+            ) : (
+              <div className="profile-payments-list">
+                {payments.map((p) => {
+                  const tierMeta = TIER_LABELS[p.tierApplied];
+                  const tierLabel = (tierMeta?.[lang as keyof typeof tierMeta] as string) ?? p.tierApplied;
+                  return (
+                    <div key={p.id} className="profile-payment-row">
+                      <div className="profile-payment-left">
+                        <span className={`profile-tier-badge ${tierMeta?.color ?? "tier-none"}`}>
+                          {tierLabel}
+                        </span>
+                        <span className="profile-payment-date">{formatDate(p.createdAt, lang)}</span>
+                      </div>
+                      <div className="profile-payment-right">
+                        <span className="profile-payment-amount">
+                          ${(p.amount / 100).toFixed(2)} {p.currency.toUpperCase()}
+                        </span>
+                        <span className={`profile-payment-status pstatus-${p.status}`}>
+                          {p.status === "succeeded"
+                            ? (lang === "zh" ? "✓ 成功" : lang === "fr" ? "✓ Réussi" : "✓ Succeeded")
+                            : p.status}
+                        </span>
+                        <span className="profile-payment-ref">#{p.cloverChargeId}</span>
+                        <Link
+                          href={`/profile/receipts/${p.id}`}
+                          className="profile-receipt-btn"
+                        >
+                          {lang === "zh" ? "查看收据" : lang === "fr" ? "Voir reçu" : "View Receipt"}
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </section>
       </div>
     </div>
   );

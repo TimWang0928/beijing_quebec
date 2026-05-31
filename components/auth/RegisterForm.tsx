@@ -6,6 +6,28 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useToast } from "@/context/ToastContext";
+import CloverPayment from "@/components/CloverPayment";
+
+const TIER = {
+  id: "REGULAR",
+  price: 100, // $1.00 (test)
+  icon: "👤",
+  fr: {
+    name: "Membre ordinaire",
+    desc: "Accès à toutes les activités culturelles et communautaires de l'association.",
+    benefits: ["Activités culturelles", "Réseau des Pékinois du Québec", "Bulletins d'information"],
+  },
+  zh: {
+    name: "普通会员",
+    desc: "参与协会各项文化与社区活动，融入旅加北京同乡圈。",
+    benefits: ["文化与社区活动", "旅加北京同乡网络", "协会活动资讯"],
+  },
+  en: {
+    name: "Regular Member",
+    desc: "Join all cultural and community activities of the Beijing Association of Quebec.",
+    benefits: ["Cultural activities", "Beijing community network", "Association news"],
+  },
+};
 
 const GOOGLE_ICON = (
   <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -18,8 +40,13 @@ const GOOGLE_ICON = (
 
 const CONTENT = {
   fr: {
-    title: "S'inscrire",
-    subtitle: "Rejoignez la communauté",
+    title: "Rejoindre l'Association",
+    subtitle: "Inscription avec adhésion",
+    membershipTitle: "Votre adhésion",
+    priceLabel: "Cotisation annuelle",
+    perYear: "/ an",
+    includedLabel: "Inclus :",
+    accountSection: "Vos informations",
     name: "Nom Complet",
     namePlaceholder: "Votre nom complet",
     email: "Adresse e-mail",
@@ -28,19 +55,26 @@ const CONTENT = {
     passwordPlaceholder: "Au moins 8 caractères",
     confirm: "Confirmer le mot de passe",
     confirmPlaceholder: "Répétez votre mot de passe",
-    submit: "Créer un Compte",
-    loading: "Création…",
+    nextPayment: "Continuer vers le paiement →",
+    google: "S'inscrire avec Google",
+    orEmail: "ou remplissez le formulaire",
     login: "Déjà membre ?",
     loginLink: "Se connecter",
-    google: "S'inscrire avec Google",
-    divider: "ou",
     passwordMismatch: "Les mots de passe ne correspondent pas",
-    success: "Compte créé ! Redirection vers la connexion…",
+    passwordTooShort: "Le mot de passe doit contenir au moins 8 caractères",
     errorGeneric: "Une erreur est survenue, veuillez réessayer",
+    successRedirect: "Compte créé ! Veuillez vous connecter.",
+    emailTaken: "Cette adresse e-mail est déjà utilisée.",
+    checkingEmail: "Vérification de l'adresse…",
   },
   zh: {
-    title: "注册",
-    subtitle: "加入我们的社区",
+    title: "加入同乡会",
+    subtitle: "注册并成为会员",
+    membershipTitle: "您的会员资格",
+    priceLabel: "年度会费",
+    perYear: "/ 年",
+    includedLabel: "包含：",
+    accountSection: "填写账户信息",
     name: "全名",
     namePlaceholder: "请输入您的姓名",
     email: "电子邮件",
@@ -49,19 +83,26 @@ const CONTENT = {
     passwordPlaceholder: "至少8个字符",
     confirm: "确认密码",
     confirmPlaceholder: "再次输入密码",
-    submit: "创建账户",
-    loading: "创建中…",
+    nextPayment: "继续前往付款 →",
+    google: "使用 Google 注册",
+    orEmail: "或填写以下表单",
     login: "已有账户？",
     loginLink: "立即登录",
-    google: "使用 Google 注册",
-    divider: "或",
     passwordMismatch: "两次输入的密码不一致",
-    success: "账户创建成功！正在跳转到登录…",
+    passwordTooShort: "密码至少需要8个字符",
     errorGeneric: "发生错误，请重试",
+    successRedirect: "账户创建成功！请登录。",
+    emailTaken: "该邮箱已被注册。",
+    checkingEmail: "正在检查邮箱…",
   },
   en: {
-    title: "Create Account",
-    subtitle: "Join our community",
+    title: "Join the Association",
+    subtitle: "Registration & Membership",
+    membershipTitle: "Your Membership",
+    priceLabel: "Annual fee",
+    perYear: "/ year",
+    includedLabel: "Includes:",
+    accountSection: "Account details",
     name: "Full Name",
     namePlaceholder: "Your full name",
     email: "Email Address",
@@ -70,23 +111,28 @@ const CONTENT = {
     passwordPlaceholder: "At least 8 characters",
     confirm: "Confirm Password",
     confirmPlaceholder: "Repeat your password",
-    submit: "Create Account",
-    loading: "Creating…",
-    login: "Already have an account?",
-    loginLink: "Sign in",
+    nextPayment: "Continue to Payment →",
     google: "Sign up with Google",
-    divider: "or",
+    orEmail: "or fill out the form",
+    login: "Already a member?",
+    loginLink: "Sign in",
     passwordMismatch: "Passwords do not match",
-    success: "Account created! Redirecting to sign in…",
+    passwordTooShort: "Password must be at least 8 characters",
     errorGeneric: "An error occurred, please try again",
+    successRedirect: "Account created! Please sign in.",
+    emailTaken: "This email address is already registered.",
+    checkingEmail: "Checking email…",
   },
 };
+
+type Step = "info" | "pay";
 
 export default function RegisterForm() {
   const { lang } = useLanguage();
   const router = useRouter();
   const { showToast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const [step, setStep] = useState<Step>("info");
+  const [checkingEmail, setCheckingEmail] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -95,57 +141,126 @@ export default function RegisterForm() {
   });
 
   const c = CONTENT[lang as keyof typeof CONTENT] ?? CONTENT.fr;
+  const tierLang = TIER[lang as keyof typeof TIER] as { name: string; desc: string; benefits: string[] };
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleInfoSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (formData.password !== formData.confirm) {
       showToast(c.passwordMismatch, "error");
       return;
     }
-
-    setIsLoading(true);
-
+    if (formData.password.length < 8) {
+      showToast(c.passwordTooShort, "error");
+      return;
+    }
+    // Check email availability before going to payment step
+    setCheckingEmail(true);
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        showToast(data.error || c.errorGeneric, "error");
+      const res = await fetch(
+        `/api/auth/check-email?email=${encodeURIComponent(formData.email)}`
+      );
+      const { exists } = await res.json();
+      if (exists) {
+        showToast(c.emailTaken, "error");
         return;
       }
-
-      showToast(c.success, "success");
-      router.push("/auth/login");
     } catch {
-      showToast(c.errorGeneric, "error");
+      // If check fails, let the payment step handle it
     } finally {
-      setIsLoading(false);
+      setCheckingEmail(false);
+    }
+    setStep("pay");
+  };
+
+  const handleCustomSubmit = async (token: string) => {
+    const res = await fetch("/api/auth/register-with-payment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        tierId: TIER.id,
+        token,
+      }),
+    });
+    if (!res.ok) {
+      const d = await res.json();
+      throw new Error(d.error || c.errorGeneric);
+    }
+    // Account created — sign in automatically
+    const result = await signIn("credentials", {
+      email: formData.email,
+      password: formData.password,
+      redirect: false,
+    });
+    if (result?.ok) {
+      router.push("/profile");
+    } else {
+      showToast(c.successRedirect, "success");
+      router.push("/auth/login");
     }
   };
 
+  // ── Step: pay ─────────────────────────────────────────────
+  if (step === "pay") {
+    return (
+      <div className="register-pay-page">
+        <CloverPayment
+          tierId={TIER.id}
+          tierName={tierLang?.name ?? "Regular Member"}
+          amount={TIER.price}
+          onSuccess={() => {/* handled inside customSubmit */}}
+          onCancel={() => setStep("info")}
+          customSubmit={handleCustomSubmit}
+        />
+      </div>
+    );
+  }
+
+  // ── Step: info ────────────────────────────────────────────
   return (
     <div className="auth-page-wrapper">
       <div className="auth-form-side">
-        <div className="auth-form-box">
+        <div className="auth-form-box register-form-wide">
+
           <div className="auth-form-header">
             <span className="auth-form-eyebrow">{c.subtitle}</span>
             <h1 className="auth-form-title">{c.title}</h1>
           </div>
 
+          {/* Membership tier summary */}
+          <div className="register-tier-summary">
+            <div className="register-tier-summary-header">
+              <span className="register-tier-icon">{TIER.icon}</span>
+              <div className="register-tier-summary-info">
+                <span className="register-tier-summary-label">{c.membershipTitle}</span>
+                <span className="register-tier-summary-name">{tierLang?.name}</span>
+              </div>
+              <div className="register-tier-summary-price">
+                <span className="register-tier-price-amount">${(TIER.price / 100).toFixed(0)} CAD</span>
+                <span className="register-tier-price-period">{c.perYear}</span>
+              </div>
+            </div>
+            <div className="register-tier-benefits">
+              <span className="register-tier-benefits-label">{c.includedLabel}</span>
+              <ul className="register-tier-benefits-list">
+                {tierLang?.benefits.map((b) => (
+                  <li key={b}>
+                    <span className="register-check">✓</span>
+                    {b}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Google OAuth */}
           <button
             type="button"
             className="auth-google-btn"
@@ -155,11 +270,11 @@ export default function RegisterForm() {
             {c.google}
           </button>
 
-          <div className="auth-sep">
-            <span>{c.divider}</span>
-          </div>
+          <div className="auth-sep"><span>{c.orEmail}</span></div>
 
-          <form onSubmit={handleSubmit} className="auth-fields" noValidate>
+          <p className="register-section-label">{c.accountSection}</p>
+
+          <form onSubmit={handleInfoSubmit} className="auth-fields" noValidate>
             <div className="auth-field-group">
               <label htmlFor="name" className="auth-label">{c.name}</label>
               <input
@@ -220,13 +335,9 @@ export default function RegisterForm() {
               />
             </div>
 
-            <button
-              type="submit"
-              className="auth-submit-btn"
-              disabled={isLoading}
-            >
-              {isLoading && <span className="auth-spinner" />}
-              {isLoading ? c.loading : c.submit}
+            <button type="submit" className="auth-submit-btn" disabled={checkingEmail}>
+              {checkingEmail && <span className="auth-spinner" />}
+              {checkingEmail ? c.checkingEmail : c.nextPayment}
             </button>
           </form>
 
@@ -237,8 +348,8 @@ export default function RegisterForm() {
             </Link>
           </p>
         </div>
-        </div>
       </div>
-    // </div>
+    </div>
   );
 }
+

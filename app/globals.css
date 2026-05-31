@@ -1082,6 +1082,10 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offse
 .profile-content {
   padding: 48px 32px 80px;
 }
+.profile-content-payments {
+  padding-top: 0;
+  padding-bottom: 80px;
+}
 .profile-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -1558,3 +1562,524 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offse
   .profile-grid { grid-template-columns: 1fr; }
   .profile-content { padding: 32px 16px 60px; }
 }
+
+/* ─── Clover Payment Form ─────────────────────────────── */
+.clover-payment-wrapper {
+  background: var(--navy);
+  border-radius: 16px;
+  padding: 40px 48px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.clover-payment-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 15px;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.clover-summary-label { color: rgba(255,255,255,0.5); }
+.clover-summary-sep { color: rgba(255,255,255,0.3); }
+.clover-summary-amount { color: var(--gold); font-size: 17px; }
+
+.clover-form { display: flex; flex-direction: column; gap: 20px; }
+.clover-form-title {
+  font-family: var(--font-playfair);
+  font-size: 20px;
+  color: #fff;
+  margin: 0 0 4px;
+}
+.clover-error {
+  background: rgba(239,68,68,0.15);
+  border: 1px solid rgba(239,68,68,0.4);
+  color: #fca5a5;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+}
+.clover-field { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.clover-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+/* The iframe mounts inside this div — needs explicit height */
+.clover-input-frame {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  height: 46px;
+  padding: 0 12px;
+  transition: border-color 0.2s;
+  overflow: hidden;
+}
+.clover-input-frame:focus-within {
+  border-color: var(--gold);
+  background: rgba(255,255,255,0.08);
+}
+.clover-field-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.2fr;
+  gap: 14px;
+}
+.clover-pay-btn {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  margin-top: 4px;
+}
+.clover-secure-notice {
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  margin: 0;
+}
+@media(max-width: 600px) {
+  .clover-payment-wrapper { padding: 28px 20px; }
+  .clover-field-row { grid-template-columns: 1fr 1fr; }
+  .clover-field-row .clover-field:last-child { grid-column: 1 / -1; }
+}
+
+/* ============================================================
+   APPLY PAGE — dark section when in payment step
+   ============================================================ */
+.membership-apply-payment.is-pay-step {
+  background: var(--navy-dark, #0d1117);
+  padding: 60px 0 80px;
+}
+
+/* ============================================================
+   REGISTER FORM — pay-before-register
+   ============================================================ */
+
+/* Payment step: full-page dark wrapper */
+.register-pay-page {
+  min-height: 100vh;
+  background: var(--navy-dark, #0d1117);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+}
+
+/* Widen the register form to accommodate tier summary */
+.register-form-wide { max-width: 520px !important; }
+
+/* Tier summary card */
+.register-tier-summary {
+  background: linear-gradient(135deg, rgba(212,175,55,0.07) 0%, rgba(212,175,55,0.03) 100%);
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.register-tier-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.register-tier-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.register-tier-summary-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.register-tier-summary-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.register-tier-summary-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+  font-family: "Playfair Display", serif;
+}
+.register-tier-summary-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.register-tier-price-amount {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--gold);
+  font-family: "Playfair Display", serif;
+}
+.register-tier-price-period {
+  font-size: 12px;
+  color: var(--muted);
+}
+.register-tier-benefits {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(212,175,55,0.15);
+}
+.register-tier-benefits-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 8px;
+}
+.register-tier-benefits-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.register-tier-benefits-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text);
+}
+.register-check {
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.register-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+
+/* ============================================================
+   PROFILE — payment history section
+   ============================================================ */
+.profile-section-full {
+  grid-column: 1 / -1;
+}
+.profile-no-payments {
+  padding: 24px;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+.profile-payments-list {
+  display: flex;
+  flex-direction: column;
+}
+.profile-payment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.profile-payment-row:last-child { border-bottom: none; }
+.profile-payment-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.profile-payment-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.profile-payment-date {
+  font-size: 13px;
+  color: var(--muted);
+}
+.profile-payment-amount {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.profile-payment-status {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.pstatus-succeeded {
+  background: rgba(34,197,94,0.1);
+  color: #16a34a;
+}
+.pstatus-refunded {
+  background: rgba(239,68,68,0.1);
+  color: #dc2626;
+}
+.pstatus-failed {
+  background: rgba(107,114,128,0.1);
+  color: #6b7280;
+}
+.profile-payment-ref {
+  font-size: 11px;
+  font-family: "Courier New", monospace;
+  color: var(--muted);
+  background: rgba(0,0,0,0.04);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* ============================================================
+   PROFILE — membership section improvements
+   ============================================================ */
+.profile-tier-badge-lg {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.profile-status-badge {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.profile-status-badge.active {
+  background: rgba(34,197,94,0.1);
+  color: #16a34a;
+}
+.profile-status-badge.inactive {
+  background: rgba(107,114,128,0.1);
+  color: #6b7280;
+}
+
+/* ============================================================
+   PROFILE — receipt link button
+   ============================================================ */
+.profile-receipt-btn {
+  display: none; /* Hidden for now — feature ready but not needed yet */
+  font-size: 12px;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  padding: 3px 10px;
+  text-decoration: none;
+  transition: background 0.18s, color 0.18s;
+  white-space: nowrap;
+}
+.profile-receipt-btn:hover {
+  background: var(--gold);
+  color: #000;
+}
+
+/* ============================================================
+   RECEIPT PAGE
+   ============================================================ */
+.receipt-page {
+  min-height: 100vh;
+  background: var(--navy-dark);
+  padding: 40px 16px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.receipt-loading {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--muted);
+  font-size: 16px;
+}
+.receipt-actions {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.receipt-back-btn {
+  font-size: 14px;
+  color: var(--gold);
+  text-decoration: none;
+  opacity: 0.85;
+  transition: opacity 0.18s;
+}
+.receipt-back-btn:hover { opacity: 1; }
+.receipt-print-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--gold);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: opacity 0.18s;
+}
+.receipt-print-btn:hover { opacity: 0.85; }
+
+.receipt-card {
+  width: 100%;
+  max-width: 600px;
+  background: var(--navy);
+  border: 1px solid rgba(212,175,55,0.2);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.receipt-header {
+  padding: 28px 32px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.receipt-logo-area {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.receipt-org-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #000;
+  font-size: 20px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.receipt-org-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--light);
+}
+.receipt-title {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.receipt-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.receipt-succeeded {
+  background: rgba(34,197,94,0.12);
+  color: #22c55e;
+  border: 1px solid rgba(34,197,94,0.3);
+}
+.receipt-divider {
+  height: 1px;
+  background: rgba(212,175,55,0.1);
+  margin: 0 32px;
+}
+.receipt-body {
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.receipt-row:last-child { border-bottom: none; }
+.receipt-label {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.receipt-value {
+  font-size: 14px;
+  color: var(--light);
+  font-weight: 500;
+  text-align: right;
+}
+.receipt-mono {
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+}
+.receipt-tier {
+  color: var(--gold);
+  font-weight: 700;
+}
+.receipt-total .receipt-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--light);
+}
+.receipt-amount {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--gold);
+}
+.receipt-footer {
+  background: rgba(212,175,55,0.04);
+  border-top: 1px solid rgba(212,175,55,0.1);
+  padding: 20px 32px;
+  text-align: center;
+}
+.receipt-thank-you {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Print styles */
+@media print {
+  .no-print { display: none !important; }
+  .receipt-page {
+    background: #fff;
+    padding: 0;
+  }
+  .receipt-card {
+    border: 1px solid #ddd;
+    border-radius: 0;
+    max-width: 100%;
+  }
+  .receipt-header { padding: 20px 24px; }
+  .receipt-body { padding: 16px 24px; }
+  .receipt-org-icon { background: #c9a227; }
+  .receipt-org-name, .receipt-value { color: #111; }
+  .receipt-label { color: #666; }
+  .receipt-divider { background: #eee; margin: 0 24px; }
+  .receipt-succeeded { color: #16a34a; background: #f0fdf4; }
+  .receipt-amount { color: #c9a227; }
+  .receipt-footer { background: #fafafa; }
+  .receipt-thank-you { color: #666; }
+}
+

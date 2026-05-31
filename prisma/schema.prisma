@@ -19,6 +19,7 @@ model User {
   membershipExpiresAt DateTime?
   accounts            Account[]
   sessions      Session[]
+  payments      Payment[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -56,4 +57,21 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Payment {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  cloverChargeId String   @unique          // Clover charge.id (e.g. clv_1abc...)
+  amount         Int                       // 单位：分 (cents)
+  currency       String   @default("cad")
+  tierApplied    String                    // 购买的会员等级
+  status         String   @default("succeeded") // succeeded | refunded | disputed
+  idempotencyKey String?                   // 防重复的幂等键
+  rawResponse    Json?                     // 保存 Clover 返回的原始 charge 对象
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
