@@ -121,7 +121,7 @@ export default function LoginForm() {
             <h1 className="auth-form-title">{c.title}</h1>
           </div>
 
-          <button
+          {/* <button
             type="button"
             className="auth-google-btn"
             onClick={() => signIn("google", { callbackUrl: "/" })}
@@ -132,7 +132,7 @@ export default function LoginForm() {
 
           <div className="auth-sep">
             <span>{c.divider}</span>
-          </div>
+          </div> */}
 
           <form onSubmit={handleSubmit} className="auth-fields" noValidate>
             <div className="auth-field-group">

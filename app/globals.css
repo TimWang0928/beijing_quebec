@@ -1080,10 +1080,10 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offse
 
 /* Content area */
 .profile-content {
-  padding: 48px 32px 80px;
+  padding: 48px 32px 0;
 }
 .profile-content-payments {
-  padding-top: 0;
+  padding-top: 32px;
   padding-bottom: 80px;
 }
 .profile-grid {
@@ -1092,8 +1092,8 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offse
   gap: 28px;
 }
 
-/* Sections */
-.profile-section { display: flex; flex-direction: column; gap: 12px; }
+/* Sections — must override the global `section { padding: 120px 0 }` rule */
+.profile-section { display: flex; flex-direction: column; gap: 12px; padding: 0; }
 .profile-section-header {
   display: flex;
   align-items: center;
@@ -1563,87 +1563,193 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offse
   .profile-content { padding: 32px 16px 60px; }
 }
 
-/* ─── Clover Payment Form ─────────────────────────────── */
-.clover-payment-wrapper {
-  background: var(--navy);
-  border-radius: 16px;
-  padding: 40px 48px;
-  max-width: 680px;
+/* ─── Clover Payment Form (redesign) ───────────────────── */
+.cp-wrap {
+  max-width: 540px;
   margin: 0 auto;
-}
-.clover-payment-summary {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  font-size: 15px;
-  color: rgba(255,255,255,0.8);
-  margin-bottom: 28px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-.clover-summary-label { color: rgba(255,255,255,0.5); }
-.clover-summary-sep { color: rgba(255,255,255,0.3); }
-.clover-summary-amount { color: var(--gold); font-size: 17px; }
-
-.clover-form { display: flex; flex-direction: column; gap: 20px; }
-.clover-form-title {
-  font-family: var(--font-playfair);
-  font-size: 20px;
-  color: #fff;
-  margin: 0 0 4px;
-}
-.clover-error {
-  background: rgba(239,68,68,0.15);
-  border: 1px solid rgba(239,68,68,0.4);
-  color: #fca5a5;
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-size: 14px;
-}
-.clover-field { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-.clover-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.6);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-/* The iframe mounts inside this div — needs explicit height */
-.clover-input-frame {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 8px;
-  height: 46px;
-  padding: 0 12px;
-  transition: border-color 0.2s;
-  overflow: hidden;
-}
-.clover-input-frame:focus-within {
-  border-color: var(--gold);
-  background: rgba(255,255,255,0.08);
-}
-.clover-field-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1.2fr;
+  flex-direction: column;
   gap: 14px;
 }
-.clover-pay-btn {
-  width: 100%;
-  padding: 15px;
-  font-size: 16px;
-  margin-top: 4px;
+
+/* Order summary strip */
+.cp-summary {
+  background: linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(212,175,55,0.04) 100%);
+  border: 1px solid rgba(212,175,55,0.28);
+  border-radius: 14px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
-.clover-secure-notice {
-  text-align: center;
-  font-size: 13px;
-  color: rgba(255,255,255,0.35);
+.cp-summary-col {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.cp-summary-col-right {
+  align-items: flex-end;
+  text-align: right;
+}
+.cp-summary-label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: rgba(255,255,255,0.38);
+  font-weight: 600;
+}
+.cp-summary-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+}
+.cp-summary-amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* Form card */
+.cp-form-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 16px;
+  padding: 26px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.cp-title {
+  font-family: var(--font-playfair), "Playfair Display", serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
   margin: 0;
 }
-@media(max-width: 600px) {
-  .clover-payment-wrapper { padding: 28px 20px; }
-  .clover-field-row { grid-template-columns: 1fr 1fr; }
-  .clover-field-row .clover-field:last-child { grid-column: 1 / -1; }
+
+/* Error */
+.cp-error {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.35);
+  color: #fca5a5;
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+/* Fields */
+.cp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1;
+  min-width: 0;
+}
+.cp-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+/* Clover iframe mounts inside this div — iframe bg cannot be made transparent */
+.cp-input {
+  background: #ffffff;
+  border: 1.5px solid rgba(0,0,0,0.12);
+  border-radius: 10px;
+  height: 48px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+.cp-input:focus-within {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212,175,55,0.22);
+}
+
+/* Row of 3 fields */
+.cp-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.2fr;
+  gap: 12px;
+}
+
+/* Pay button */
+.cp-pay-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 15px 24px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+  color: var(--navy);
+  font-size: 15px;
+  font-weight: 700;
+  font-family: "DM Sans", sans-serif;
+  letter-spacing: 0.02em;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  margin-top: 2px;
+}
+.cp-pay-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(212,175,55,0.3);
+}
+.cp-pay-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+.cp-pay-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+@keyframes cp-spin { to { transform: rotate(360deg); } }
+.cp-pay-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(6,17,31,0.3);
+  border-top-color: var(--navy);
+  border-radius: 50%;
+  animation: cp-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* Footer */
+.cp-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 2px 0;
+}
+.cp-back-btn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: rgba(255,255,255,0.38);
+  cursor: pointer;
+  font-family: "DM Sans", sans-serif;
+  transition: color 0.2s;
+  padding: 0;
+}
+.cp-back-btn:hover { color: rgba(255,255,255,0.72); }
+.cp-secure {
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.28);
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 520px) {
+  .cp-row { grid-template-columns: 1fr 1fr; }
+  .cp-row .cp-field:last-child { grid-column: 1 / -1; }
+  .cp-summary { flex-direction: column; gap: 10px; }
+  .cp-summary-col-right { align-items: flex-start; text-align: left; }
+  .cp-form-card { padding: 22px 18px 24px; }
 }
 
 /* ============================================================
@@ -1651,7 +1757,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offse
    ============================================================ */
 .membership-apply-payment.is-pay-step {
   background: var(--navy-dark, #0d1117);
-  padding: 60px 0 80px;
+  padding: 48px 0 80px;
 }
 
 /* ============================================================

@@ -261,7 +261,7 @@ export default function RegisterForm() {
           </div>
 
           {/* Google OAuth */}
-          <button
+          {/* <button
             type="button"
             className="auth-google-btn"
             onClick={() => signIn("google", { callbackUrl: "/" })}
@@ -270,7 +270,7 @@ export default function RegisterForm() {
             {c.google}
           </button>
 
-          <div className="auth-sep"><span>{c.orEmail}</span></div>
+          <div className="auth-sep"><span>{c.orEmail}</span></div> */}
 
           <p className="register-section-label">{c.accountSection}</p>
 

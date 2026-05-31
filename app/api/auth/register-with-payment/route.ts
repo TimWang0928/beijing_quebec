@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
           tierApplied: tierId,
           status: "succeeded",
           idempotencyKey,
-          rawResponse: charge,
+          rawResponse: JSON.parse(JSON.stringify(charge)),
         },
       });
     });

@@ -132,8 +132,17 @@ export default function CloverPayment({ tierId, tierName, amount, onSuccess, onC
 
     const elements = clover.elements();
     const styles = {
-      body: { fontFamily: "'DM Sans', sans-serif", fontSize: "15px" },
-      input: { color: "#1a1a2e", fontFamily: "'DM Sans', sans-serif" },
+      body: {
+        fontFamily: "'DM Sans', sans-serif",
+        fontSize: "15px",
+        color: "#1a1a24",
+        margin: "0",
+        padding: "13px 14px 0",
+      },
+      input: {
+        color: "#1a1a24",
+        fontSize: "15px",
+      },
     };
 
     const cardNumber = elements.create("CARD_NUMBER", styles);
@@ -201,58 +210,67 @@ export default function CloverPayment({ tierId, tierName, amount, onSuccess, onC
   };
 
   return (
-    <div className="clover-payment-wrapper">
-      <div className="clover-payment-summary">
-        <span className="clover-summary-label">{c.membershipLabel}:</span>
-        <strong>{tierName}</strong>
-        <span className="clover-summary-sep">·</span>
-        <span className="clover-summary-label">{c.totalLabel}:</span>
-        <strong className="clover-summary-amount">${(amount / 100).toFixed(2)} CAD</strong>
+    <div className="cp-wrap">
+      {/* Order summary */}
+      <div className="cp-summary">
+        <div className="cp-summary-col">
+          <span className="cp-summary-label">{c.membershipLabel}</span>
+          <span className="cp-summary-value">{tierName}</span>
+        </div>
+        <div className="cp-summary-col cp-summary-col-right">
+          <span className="cp-summary-label">{c.totalLabel}</span>
+          <span className="cp-summary-amount">${(amount / 100).toFixed(2)} CAD</span>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="clover-form" noValidate>
-        <h3 className="clover-form-title">{c.title}</h3>
+      <form onSubmit={handleSubmit} className="cp-form-card" noValidate>
+        <h3 className="cp-title">{c.title}</h3>
 
         {error && (
-          <div className="clover-error" role="alert">
+          <div className="cp-error" role="alert">
             {error}
           </div>
         )}
 
-        <div className="clover-field">
-          <label className="clover-label">{c.cardNumber}</label>
-          <div id="clover-card-number" className="clover-input-frame" />
+        <div className="cp-field">
+          <label className="cp-label">{c.cardNumber}</label>
+          <div id="clover-card-number" className="cp-input" />
         </div>
 
-        <div className="clover-field-row">
-          <div className="clover-field">
-            <label className="clover-label">{c.expiry}</label>
-            <div id="clover-card-date" className="clover-input-frame" />
+        <div className="cp-row">
+          <div className="cp-field">
+            <label className="cp-label">{c.expiry}</label>
+            <div id="clover-card-date" className="cp-input" />
           </div>
-          <div className="clover-field">
-            <label className="clover-label">{c.cvv}</label>
-            <div id="clover-card-cvv" className="clover-input-frame" />
+          <div className="cp-field">
+            <label className="cp-label">{c.cvv}</label>
+            <div id="clover-card-cvv" className="cp-input" />
           </div>
-          <div className="clover-field">
-            <label className="clover-label">{c.postal}</label>
-            <div id="clover-card-postal-code" className="clover-input-frame" />
+          <div className="cp-field">
+            <label className="cp-label">{c.postal}</label>
+            <div id="clover-card-postal-code" className="cp-input" />
           </div>
         </div>
 
         <button
           type="submit"
-          className="btn-gold clover-pay-btn"
+          className="cp-pay-btn"
           disabled={isLoading}
         >
-          {isLoading ? c.paying : `${c.pay} — $${(amount / 100).toFixed(2)} CAD`}
+          {isLoading ? (
+            <><span className="cp-pay-spinner" /> {c.paying}</>
+          ) : (
+            `${c.pay} — $${(amount / 100).toFixed(2)} CAD`
+          )}
         </button>
+      </form>
 
-        <button type="button" className="payment-back-btn" onClick={onCancel}>
+      <div className="cp-footer">
+        <button type="button" className="cp-back-btn" onClick={onCancel}>
           {c.cancel}
         </button>
-
-        <p className="clover-secure-notice">🔒 {c.secureNotice}</p>
-      </form>
+        <span className="cp-secure">🔒 {c.secureNotice}</span>
+      </div>
     </div>
   );
 }
