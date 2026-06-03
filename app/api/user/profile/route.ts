@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
       role: true,
       membershipTier: true,
       membershipExpiresAt: true,
+      foundingNumber: true,
       emailVerified: true,
       createdAt: true,
       updatedAt: true,

@@ -15,6 +15,7 @@ interface UserProfile {
   role: string;
   membershipTier: string;
   membershipExpiresAt: string | null;
+  foundingNumber: number | null;
   emailVerified: string | null;
   createdAt: string;
   updatedAt: string;
@@ -31,12 +32,10 @@ interface PaymentRecord {
 }
 
 const TIER_LABELS: Record<string, { fr: string; zh: string; en: string; color: string }> = {
-  NONE:       { fr: "Aucun",          zh: "无",     en: "None",       color: "tier-none" },
-  REGULAR:    { fr: "Régulier",       zh: "普通",   en: "Regular",    color: "tier-regular" },
-  FAMILY:     { fr: "Famille",        zh: "家庭",   en: "Family",     color: "tier-family" },
-  YOUTH:      { fr: "Jeunesse",       zh: "青年",   en: "Youth",      color: "tier-youth" },
-  HONORARY:   { fr: "Honoraire",      zh: "荣誉",   en: "Honorary",   color: "tier-honorary" },
-  SUPPORTING: { fr: "Soutien",        zh: "支持",   en: "Supporting", color: "tier-supporting" },
+  NONE:       { fr: "Aucun",             zh: "无",      en: "None",            color: "tier-none" },
+  REGULAR:    { fr: "Membre ordinaire",  zh: "普通会员", en: "Regular Member",  color: "tier-regular" },
+  FAMILY:     { fr: "Membre famille",    zh: "家庭会员", en: "Family Member",   color: "tier-family" },
+  FOUNDING:   { fr: "Membre fondateur", zh: "创始会员", en: "Founding Member", color: "tier-founding" },
 };
 
 const CONTENT = {
@@ -375,10 +374,22 @@ export default function ProfilePage() {
                 <span className="profile-field-label">{c.membershipTier}</span>
                 <span className={`profile-tier-badge-lg ${tier.color}`}>{tierLabel}</span>
               </div>
+              {profile.membershipTier === "FOUNDING" && profile.foundingNumber && (
+                <div className="profile-field">
+                  <span className="profile-field-label">
+                    {lang === "zh" ? "永久编号" : lang === "fr" ? "Numéro permanent" : "Permanent Number"}
+                  </span>
+                  <span className="profile-field-value profile-founding-number">
+                    NO.{String(profile.foundingNumber).padStart(3, "0")}
+                  </span>
+                </div>
+              )}
               <div className="profile-field">
                 <span className="profile-field-label">{c.membershipExpiry}</span>
                 <span className="profile-field-value">
-                  {profile.membershipExpiresAt
+                  {profile.membershipTier === "FOUNDING"
+                    ? (lang === "zh" ? "永久" : lang === "fr" ? "Permanent" : "Permanent")
+                    : profile.membershipExpiresAt
                     ? formatDate(profile.membershipExpiresAt, lang)
                     : c.noExpiry}
                 </span>

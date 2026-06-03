@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { useRouter } from "next/navigation";
@@ -8,46 +8,99 @@ import { signIn } from "next-auth/react";
 import { useToast } from "@/context/ToastContext";
 import CloverPayment from "@/components/CloverPayment";
 
-const TIER = {
-  id: "REGULAR",
-  price: 100, // $1.00 (test)
-  icon: "👤",
-  fr: {
-    name: "Membre ordinaire",
-    desc: "Accès à toutes les activités culturelles et communautaires de l'association.",
-    benefits: ["Activités culturelles", "Réseau des Pékinois du Québec", "Bulletins d'information"],
+// ─── Tier definitions ──────────────────────────────────────────────────────────
+const TIERS = [
+  {
+    id: "REGULAR",
+    icon: "👤",
+    price: 3600,
+    recurring: true,
+    color: "tier-regular",
+    accentColor: "#93c5fd",
+    fr: {
+      name: "Membre ordinaire",
+      desc: "Accès à toutes les activités et à la communauté des Pékinois du Québec.",
+      benefits: ["Toutes les activités de l'association", "Informations communautaires", "Accès aux infos exclusives membres"],
+    },
+    zh: {
+      name: "普通会员",
+      desc: "参与协会各项文化与社区活动，融入旅加北京同乡圈。",
+      benefits: ["参与协会举办的各类活动", "获取社区资讯与资源", "享受会员专属信息"],
+    },
+    en: {
+      name: "Regular Member",
+      desc: "Join all activities and the Beijing community of Quebec.",
+      benefits: ["All association activities", "Community news & resources", "Member-exclusive info"],
+    },
   },
-  zh: {
-    name: "普通会员",
-    desc: "参与协会各项文化与社区活动，融入旅加北京同乡圈。",
-    benefits: ["文化与社区活动", "旅加北京同乡网络", "协会活动资讯"],
+  {
+    id: "FAMILY",
+    icon: "👨‍👩‍👧‍👦",
+    price: 6600,
+    recurring: true,
+    color: "tier-family",
+    accentColor: "#d8b4fe",
+    fr: {
+      name: "Membre famille",
+      desc: "Une adhésion pour tous les membres du foyer.",
+      benefits: ["Tous les avantages ordinaires", "Couverture de toute la famille", "Participation familiale aux activités"],
+    },
+    zh: {
+      name: "家庭会员",
+      desc: "以家庭为单位入会，全家共享所有权益。",
+      benefits: ["包含全部普通会员权益", "全家成员共享活动参与权", "家庭身份统一管理"],
+    },
+    en: {
+      name: "Family Member",
+      desc: "One membership covers the whole household.",
+      benefits: ["All Regular Member benefits", "Covers all household members", "Family activity participation"],
+    },
   },
-  en: {
-    name: "Regular Member",
-    desc: "Join all cultural and community activities of the Beijing Association of Quebec.",
-    benefits: ["Cultural activities", "Beijing community network", "Association news"],
+  {
+    id: "FOUNDING",
+    icon: "🏅",
+    price: 36500,
+    recurring: false,
+    seatLimit: 50,
+    color: "tier-founding",
+    accentColor: "#fcd34d",
+    fr: {
+      name: "Membre fondateur",
+      desc: "Rejoignez les 50 membres fondateurs. Numéro permanent. Honneur inoubliable.",
+      benefits: ["Numéro permanent NO.001–NO.050", "Mur des fondateurs anniversaire", "Certification en présentiel 6 juin", "Carte collector permanente", "Sièges prioritaires aux événements", "Réunions privées & projets prioritaires"],
+    },
+    zh: {
+      name: "创始会员",
+      desc: "限量50席，永久编号，与协会共同见证历史。",
+      benefits: ["永久编号 NO.001–NO.050", "周年签名墙永久留名", "6月6日现场认证", "永久收藏版会员卡", "周年活动优先席位", "闭门交流与项目优先参与"],
+    },
+    en: {
+      name: "Founding Member",
+      desc: "One of only 50 founding members. Permanent number. Lasting legacy.",
+      benefits: ["Permanent number NO.001–NO.050", "Anniversary signature wall", "June 6th on-site certification", "Permanent collector's card", "Priority seats at events", "Closed-door meetings & priority projects"],
+    },
   },
-};
+];
 
-const GOOGLE_ICON = (
-  <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M47.532 24.552c0-1.636-.147-3.2-.42-4.704H24v9.02h13.196c-.572 3.06-2.292 5.652-4.88 7.388v6.136h7.9c4.62-4.252 7.316-10.516 7.316-17.84z" fill="#4285F4"/>
-    <path d="M24 48c6.48 0 11.916-2.148 15.888-5.82l-7.9-6.136c-2.148 1.44-4.892 2.292-7.988 2.292-6.144 0-11.344-4.152-13.2-9.724H2.62v6.336C6.572 42.8 14.74 48 24 48z" fill="#34A853"/>
-    <path d="M10.8 28.612A14.38 14.38 0 0 1 9.96 24c0-1.604.284-3.16.84-4.612v-6.336H2.62A23.98 23.98 0 0 0 0 24c0 3.876.932 7.544 2.62 10.948l8.18-6.336z" fill="#FBBC05"/>
-    <path d="M24 9.664c3.46 0 6.572 1.188 9.016 3.52l6.748-6.748C35.908 2.4 30.472 0 24 0 14.74 0 6.572 5.2 2.62 13.052l8.18 6.336C12.656 13.816 17.856 9.664 24 9.664z" fill="#EA4335"/>
-  </svg>
-);
-
+// ─── Page-level content ────────────────────────────────────────────────────────
 const CONTENT = {
   fr: {
     title: "Rejoindre l'Association",
+    chooseTierTitle: "Choisissez votre adhésion",
+    chooseTierSub: "Sélectionnez le niveau qui vous convient avant de créer votre compte",
+    perYear: "/ an",
+    oneTime: "unique",
+    seatsLeft: (n: number) => `${n} place${n !== 1 ? "s" : ""} restante${n !== 1 ? "s" : ""}`,
+    soldOut: "Complet",
+    selectBtn: "Choisir",
+    selectedBtn: "✓ Sélectionné",
+    continueToAccount: "Continuer →",
+    accountSection: "Vos informations",
     subtitle: "Inscription avec adhésion",
     membershipTitle: "Votre adhésion",
-    priceLabel: "Cotisation annuelle",
-    perYear: "/ an",
+    priceLabel: "Cotisation",
     includedLabel: "Inclus :",
-    accountSection: "Vos informations",
-    name: "Nom Complet",
+    name: "Nom complet",
     namePlaceholder: "Votre nom complet",
     email: "Adresse e-mail",
     emailPlaceholder: "vous@exemple.com",
@@ -56,8 +109,6 @@ const CONTENT = {
     confirm: "Confirmer le mot de passe",
     confirmPlaceholder: "Répétez votre mot de passe",
     nextPayment: "Continuer vers le paiement →",
-    google: "S'inscrire avec Google",
-    orEmail: "ou remplissez le formulaire",
     login: "Déjà membre ?",
     loginLink: "Se connecter",
     passwordMismatch: "Les mots de passe ne correspondent pas",
@@ -65,16 +116,25 @@ const CONTENT = {
     errorGeneric: "Une erreur est survenue, veuillez réessayer",
     successRedirect: "Compte créé ! Veuillez vous connecter.",
     emailTaken: "Cette adresse e-mail est déjà utilisée.",
-    checkingEmail: "Vérification de l'adresse…",
+    checkingEmail: "Vérification…",
+    backToTiers: "← Modifier le niveau",
   },
   zh: {
     title: "加入同乡会",
+    chooseTierTitle: "选择会员档位",
+    chooseTierSub: "在创建账户之前，请先选择适合您的会员类别",
+    perYear: "/ 年",
+    oneTime: "一次性",
+    seatsLeft: (n: number) => `仅剩 ${n} 席`,
+    soldOut: "已售罄",
+    selectBtn: "选择",
+    selectedBtn: "✓ 已选择",
+    continueToAccount: "继续 →",
+    accountSection: "填写账户信息",
     subtitle: "注册并成为会员",
     membershipTitle: "您的会员资格",
-    priceLabel: "年度会费",
-    perYear: "/ 年",
+    priceLabel: "会费",
     includedLabel: "包含：",
-    accountSection: "填写账户信息",
     name: "全名",
     namePlaceholder: "请输入您的姓名",
     email: "电子邮件",
@@ -84,8 +144,6 @@ const CONTENT = {
     confirm: "确认密码",
     confirmPlaceholder: "再次输入密码",
     nextPayment: "继续前往付款 →",
-    google: "使用 Google 注册",
-    orEmail: "或填写以下表单",
     login: "已有账户？",
     loginLink: "立即登录",
     passwordMismatch: "两次输入的密码不一致",
@@ -93,16 +151,25 @@ const CONTENT = {
     errorGeneric: "发生错误，请重试",
     successRedirect: "账户创建成功！请登录。",
     emailTaken: "该邮箱已被注册。",
-    checkingEmail: "正在检查邮箱…",
+    checkingEmail: "检查中…",
+    backToTiers: "← 修改档位",
   },
   en: {
     title: "Join the Association",
+    chooseTierTitle: "Choose Your Membership",
+    chooseTierSub: "Select the tier that suits you before creating your account",
+    perYear: "/ year",
+    oneTime: "one-time",
+    seatsLeft: (n: number) => `${n} seat${n !== 1 ? "s" : ""} left`,
+    soldOut: "Sold Out",
+    selectBtn: "Select",
+    selectedBtn: "✓ Selected",
+    continueToAccount: "Continue →",
+    accountSection: "Account details",
     subtitle: "Registration & Membership",
     membershipTitle: "Your Membership",
-    priceLabel: "Annual fee",
-    perYear: "/ year",
+    priceLabel: "Fee",
     includedLabel: "Includes:",
-    accountSection: "Account details",
     name: "Full Name",
     namePlaceholder: "Your full name",
     email: "Email Address",
@@ -112,8 +179,6 @@ const CONTENT = {
     confirm: "Confirm Password",
     confirmPlaceholder: "Repeat your password",
     nextPayment: "Continue to Payment →",
-    google: "Sign up with Google",
-    orEmail: "or fill out the form",
     login: "Already a member?",
     loginLink: "Sign in",
     passwordMismatch: "Passwords do not match",
@@ -121,28 +186,37 @@ const CONTENT = {
     errorGeneric: "An error occurred, please try again",
     successRedirect: "Account created! Please sign in.",
     emailTaken: "This email address is already registered.",
-    checkingEmail: "Checking email…",
+    checkingEmail: "Checking…",
+    backToTiers: "← Change tier",
   },
 };
 
-type Step = "info" | "pay";
+type Step = "tier" | "info" | "pay";
 
 export default function RegisterForm() {
   const { lang } = useLanguage();
   const router = useRouter();
   const { showToast } = useToast();
-  const [step, setStep] = useState<Step>("info");
+
+  const [step, setStep] = useState<Step>("tier");
+  const [selectedTierId, setSelectedTierId] = useState<string>("REGULAR");
+  const [foundingSeatsLeft, setFoundingSeatsLeft] = useState<number | null>(null);
   const [checkingEmail, setCheckingEmail] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirm: "",
-  });
+  const [formData, setFormData] = useState({ name: "", email: "", password: "", confirm: "" });
 
   const c = CONTENT[lang as keyof typeof CONTENT] ?? CONTENT.fr;
-  const tierLang = TIER[lang as keyof typeof TIER] as { name: string; desc: string; benefits: string[] };
 
+  useEffect(() => {
+    fetch("/api/membership/founding-seats")
+      .then((r) => r.json())
+      .then((d) => setFoundingSeatsLeft(d.seatsLeft ?? null))
+      .catch(() => {});
+  }, []);
+
+  const selectedTier = TIERS.find((t) => t.id === selectedTierId)!;
+  const tierLang = selectedTier[lang as keyof typeof selectedTier] as { name: string; desc: string; benefits: string[] };
+
+  const isFoundingSoldOut = foundingSeatsLeft !== null && foundingSeatsLeft <= 0;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -150,30 +224,14 @@ export default function RegisterForm() {
 
   const handleInfoSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (formData.password !== formData.confirm) {
-      showToast(c.passwordMismatch, "error");
-      return;
-    }
-    if (formData.password.length < 8) {
-      showToast(c.passwordTooShort, "error");
-      return;
-    }
-    // Check email availability before going to payment step
+    if (formData.password !== formData.confirm) { showToast(c.passwordMismatch, "error"); return; }
+    if (formData.password.length < 8) { showToast(c.passwordTooShort, "error"); return; }
     setCheckingEmail(true);
     try {
-      const res = await fetch(
-        `/api/auth/check-email?email=${encodeURIComponent(formData.email)}`
-      );
+      const res = await fetch(`/api/auth/check-email?email=${encodeURIComponent(formData.email)}`);
       const { exists } = await res.json();
-      if (exists) {
-        showToast(c.emailTaken, "error");
-        return;
-      }
-    } catch {
-      // If check fails, let the payment step handle it
-    } finally {
-      setCheckingEmail(false);
-    }
+      if (exists) { showToast(c.emailTaken, "error"); return; }
+    } catch { /* let payment step handle it */ } finally { setCheckingEmail(false); }
     setStep("pay");
   };
 
@@ -181,41 +239,26 @@ export default function RegisterForm() {
     const res = await fetch("/api/auth/register-with-payment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        tierId: TIER.id,
-        token,
-      }),
+      body: JSON.stringify({ name: formData.name, email: formData.email, password: formData.password, tierId: selectedTierId, token }),
     });
     if (!res.ok) {
       const d = await res.json();
       throw new Error(d.error || c.errorGeneric);
     }
-    // Account created — sign in automatically
-    const result = await signIn("credentials", {
-      email: formData.email,
-      password: formData.password,
-      redirect: false,
-    });
-    if (result?.ok) {
-      router.push("/profile");
-    } else {
-      showToast(c.successRedirect, "success");
-      router.push("/auth/login");
-    }
+    const result = await signIn("credentials", { email: formData.email, password: formData.password, redirect: false });
+    if (result?.ok) { router.push("/profile"); }
+    else { showToast(c.successRedirect, "success"); router.push("/auth/login"); }
   };
 
-  // ── Step: pay ─────────────────────────────────────────────
+  // ── Step: pay ──────────────────────────────────────────────────────────────
   if (step === "pay") {
     return (
       <div className="register-pay-page">
         <CloverPayment
-          tierId={TIER.id}
-          tierName={tierLang?.name ?? "Regular Member"}
-          amount={TIER.price}
-          onSuccess={() => {/* handled inside customSubmit */}}
+          tierId={selectedTierId}
+          tierName={tierLang?.name ?? selectedTierId}
+          amount={selectedTier.price}
+          onSuccess={() => {}}
           onCancel={() => setStep("info")}
           customSubmit={handleCustomSubmit}
         />
@@ -223,7 +266,83 @@ export default function RegisterForm() {
     );
   }
 
-  // ── Step: info ────────────────────────────────────────────
+  // ── Step: tier ─────────────────────────────────────────────────────────────
+  if (step === "tier") {
+    return (
+      <div className="auth-page-wrapper register-tier-wrapper">
+        <div className="register-tier-page">
+          <div className="register-tier-header">
+            <h1 className="auth-form-title" style={{ textAlign: "center" }}>{c.chooseTierTitle}</h1>
+            <p className="auth-form-eyebrow" style={{ textAlign: "center", marginTop: 8 }}>{c.chooseTierSub}</p>
+          </div>
+
+          <div className="register-tier-cards">
+            {TIERS.map((tier) => {
+              const t = tier[lang as keyof typeof tier] as { name: string; desc: string; benefits: string[] };
+              const isSelected = selectedTierId === tier.id;
+              const soldOut = tier.id === "FOUNDING" && isFoundingSoldOut;
+              const seatsLeft = tier.id === "FOUNDING" ? foundingSeatsLeft : null;
+
+              return (
+                <div
+                  key={tier.id}
+                  className={`register-tier-card ${isSelected ? "register-tier-card-selected" : ""} ${soldOut ? "tier-card-disabled" : ""}`}
+                  style={{ "--tier-accent": tier.accentColor } as React.CSSProperties}
+                  onClick={() => { if (!soldOut) setSelectedTierId(tier.id); }}
+                >
+                  <div className="register-tier-card-top">
+                    <span className="register-tier-card-icon">{tier.icon}</span>
+                    <span className={`tier-card-name-badge ${tier.color}`}>{t.name}</span>
+                    {isSelected && <span className="register-tier-card-check">✓</span>}
+                  </div>
+
+                  <p className="register-tier-card-desc">{t.desc}</p>
+
+                  <ul className="tier-card-benefits register-tier-card-benefits">
+                    {t.benefits.map((b) => (
+                      <li key={b}><span className="tier-benefit-check">✓</span>{b}</li>
+                    ))}
+                  </ul>
+
+                  <div className="register-tier-card-footer">
+                    <div className="tier-card-price" style={{ marginBottom: 0 }}>
+                      <span className="tier-price-value">
+                        ${(tier.price / 100).toFixed(0)} CAD
+                        <span className="tier-price-recurrence">&nbsp;{tier.recurring ? c.perYear : c.oneTime}</span>
+                      </span>
+                    </div>
+
+                    {tier.id === "FOUNDING" && (
+                      <div className={`founding-seats-badge ${soldOut ? "founding-seats-soldout" : ""}`} style={{ marginTop: 6 }}>
+                        {soldOut ? c.soldOut : seatsLeft !== null ? c.seatsLeft(seatsLeft) : `${tier.seatLimit} seats total`}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "center", marginTop: 32 }}>
+            <button
+              className="btn-gold"
+              style={{ minWidth: 220, fontSize: 15 }}
+              onClick={() => setStep("info")}
+            >
+              {c.continueToAccount}
+            </button>
+          </div>
+
+          <p className="auth-switch" style={{ textAlign: "center", marginTop: 24 }}>
+            {c.login}{" "}
+            <Link href="/auth/login" className="auth-switch-link">{c.loginLink}</Link>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Step: info ─────────────────────────────────────────────────────────────
   return (
     <div className="auth-page-wrapper">
       <div className="auth-form-side">
@@ -234,105 +353,56 @@ export default function RegisterForm() {
             <h1 className="auth-form-title">{c.title}</h1>
           </div>
 
-          {/* Membership tier summary */}
+          {/* Selected tier summary */}
           <div className="register-tier-summary">
             <div className="register-tier-summary-header">
-              <span className="register-tier-icon">{TIER.icon}</span>
+              <span className="register-tier-icon">{selectedTier.icon}</span>
               <div className="register-tier-summary-info">
                 <span className="register-tier-summary-label">{c.membershipTitle}</span>
                 <span className="register-tier-summary-name">{tierLang?.name}</span>
               </div>
               <div className="register-tier-summary-price">
-                <span className="register-tier-price-amount">${(TIER.price / 100).toFixed(0)} CAD</span>
-                <span className="register-tier-price-period">{c.perYear}</span>
+                <span className="register-tier-price-amount">${(selectedTier.price / 100).toFixed(0)} CAD</span>
+                <span className="register-tier-price-period">
+                  &nbsp;{selectedTier.recurring ? c.perYear : c.oneTime}
+                </span>
               </div>
             </div>
             <div className="register-tier-benefits">
               <span className="register-tier-benefits-label">{c.includedLabel}</span>
               <ul className="register-tier-benefits-list">
                 {tierLang?.benefits.map((b) => (
-                  <li key={b}>
-                    <span className="register-check">✓</span>
-                    {b}
-                  </li>
+                  <li key={b}><span className="register-check">✓</span>{b}</li>
                 ))}
               </ul>
             </div>
+            <button
+              type="button"
+              className="register-back-to-tiers"
+              onClick={() => setStep("tier")}
+            >
+              {c.backToTiers}
+            </button>
           </div>
-
-          {/* Google OAuth */}
-          {/* <button
-            type="button"
-            className="auth-google-btn"
-            onClick={() => signIn("google", { callbackUrl: "/" })}
-          >
-            {GOOGLE_ICON}
-            {c.google}
-          </button>
-
-          <div className="auth-sep"><span>{c.orEmail}</span></div> */}
 
           <p className="register-section-label">{c.accountSection}</p>
 
           <form onSubmit={handleInfoSubmit} className="auth-fields" noValidate>
             <div className="auth-field-group">
               <label htmlFor="name" className="auth-label">{c.name}</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder={c.namePlaceholder}
-                className="auth-input"
-                required
-                autoComplete="name"
-              />
+              <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} placeholder={c.namePlaceholder} className="auth-input" required autoComplete="name" />
             </div>
-
             <div className="auth-field-group">
               <label htmlFor="email" className="auth-label">{c.email}</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder={c.emailPlaceholder}
-                className="auth-input"
-                required
-                autoComplete="email"
-              />
+              <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} placeholder={c.emailPlaceholder} className="auth-input" required autoComplete="email" />
             </div>
-
             <div className="auth-field-group">
               <label htmlFor="password" className="auth-label">{c.password}</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder={c.passwordPlaceholder}
-                className="auth-input"
-                required
-                autoComplete="new-password"
-              />
+              <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} placeholder={c.passwordPlaceholder} className="auth-input" required autoComplete="new-password" />
             </div>
-
             <div className="auth-field-group">
               <label htmlFor="confirm" className="auth-label">{c.confirm}</label>
-              <input
-                type="password"
-                id="confirm"
-                name="confirm"
-                value={formData.confirm}
-                onChange={handleChange}
-                placeholder={c.confirmPlaceholder}
-                className="auth-input"
-                required
-                autoComplete="new-password"
-              />
+              <input type="password" id="confirm" name="confirm" value={formData.confirm} onChange={handleChange} placeholder={c.confirmPlaceholder} className="auth-input" required autoComplete="new-password" />
             </div>
 
             <button type="submit" className="auth-submit-btn" disabled={checkingEmail}>
@@ -343,13 +413,10 @@ export default function RegisterForm() {
 
           <p className="auth-switch">
             {c.login}{" "}
-            <Link href="/auth/login" className="auth-switch-link">
-              {c.loginLink}
-            </Link>
+            <Link href="/auth/login" className="auth-switch-link">{c.loginLink}</Link>
           </p>
         </div>
       </div>
     </div>
   );
 }
-

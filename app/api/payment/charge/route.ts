@@ -6,12 +6,12 @@ import { randomUUID } from "crypto";
 
 // Server-authoritative price table — never trust the client for the amount
 const TIER_PRICES: Record<string, number> = {
-  REGULAR:    100,   // $1.00 CAD (test)
-  FAMILY:     200,   // $2.00 CAD (test)
-  YOUTH:      300,   // $3.00 CAD (test)
-  HONORARY:   400,   // $4.00 CAD (test)
-  SUPPORTING: 500,   // $5.00 CAD (test)
+  REGULAR:  3600,   // $36.00 CAD/year
+  FAMILY:   6600,   // $66.00 CAD/year
+  FOUNDING: 36500,  // $365.00 CAD one-time
 };
+
+const FOUNDING_SEAT_LIMIT = 50;
 
 const CLOVER_API_BASE =
   process.env.NODE_ENV === "production"
@@ -37,6 +37,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid membership tier" }, { status: 400 });
     }
 
+    // Check founding member seat availability before charging
+    let foundingNumber: number | null = null;
+    if (tierId === "FOUNDING") {
+      const takenSeats = await prisma.user.findMany({
+        where: { membershipTier: "FOUNDING" },
+        select: { foundingNumber: true },
+        orderBy: { foundingNumber: "asc" },
+      });
+
+      if (takenSeats.length >= FOUNDING_SEAT_LIMIT) {
+        return NextResponse.json(
+          { error: "Founding member seats are sold out (50/50)" },
+          { status: 409 }
+        );
+      }
+
+      // Find the lowest available number 1–50
+      const taken = new Set(takenSeats.map((u) => u.foundingNumber));
+      for (let n = 1; n <= FOUNDING_SEAT_LIMIT; n++) {
+        if (!taken.has(n)) { foundingNumber = n; break; }
+      }
+    }
+
     if (!process.env.CLOVER_PRIVATE_KEY) {
       console.error("CLOVER_PRIVATE_KEY is not configured");
       return NextResponse.json({ error: "Payment service not configured" }, { status: 503 });
@@ -48,7 +71,6 @@ export async function POST(request: NextRequest) {
     }
 
     const idempotencyKey = randomUUID();
-    // Forward the real client IP so Clover can apply fraud checks
     const clientIp =
       request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "127.0.0.1";
 
@@ -111,9 +133,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: message }, { status: 402 });
     }
 
-    // Activate membership for 1 year + record the payment — in a transaction
-    const expiresAt = new Date();
-    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+    // FOUNDING: permanent (no expiry). Others: 1 year.
+    const expiresAt =
+      tierId === "FOUNDING"
+        ? null
+        : (() => { const d = new Date(); d.setFullYear(d.getFullYear() + 1); return d; })();
 
     await prisma.$transaction([
       prisma.user.update({
@@ -121,6 +145,9 @@ export async function POST(request: NextRequest) {
         data: {
           membershipTier: tierId,
           membershipExpiresAt: expiresAt,
+          ...(tierId === "FOUNDING" && foundingNumber !== null
+            ? { foundingNumber }
+            : {}),
         },
       }),
       prisma.payment.create({
@@ -141,7 +168,8 @@ export async function POST(request: NextRequest) {
       success: true,
       chargeId: charge.id as string,
       membershipTier: tierId,
-      expiresAt: expiresAt.toISOString(),
+      expiresAt: expiresAt?.toISOString() ?? null,
+      ...(foundingNumber !== null ? { foundingNumber } : {}),
     });
   } catch (err) {
     console.error("Payment error:", err);

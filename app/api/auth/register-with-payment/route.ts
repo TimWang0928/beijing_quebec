@@ -4,8 +4,12 @@ import { randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
 
 const TIER_PRICES: Record<string, number> = {
-  REGULAR: 100,
+  REGULAR:  3600,   // $36.00 CAD/year
+  FAMILY:   6600,   // $66.00 CAD/year
+  FOUNDING: 36500,  // $365.00 CAD one-time
 };
+
+const FOUNDING_SEAT_LIMIT = 50;
 
 const CLOVER_API_BASE =
   process.env.NODE_ENV === "production"
@@ -16,7 +20,6 @@ export async function POST(request: NextRequest) {
   try {
     const { name, email, password, tierId, token } = await request.json();
 
-    // Validate required fields
     if (!name || !email || !password || !tierId || !token) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
@@ -30,17 +33,35 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid membership tier" }, { status: 400 });
     }
 
-    // Check email not already taken
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
       return NextResponse.json({ error: "Email already registered" }, { status: 409 });
+    }
+
+    // Check founding seat availability before charging
+    let foundingNumber: number | null = null;
+    if (tierId === "FOUNDING") {
+      const takenSeats = await prisma.user.findMany({
+        where: { membershipTier: "FOUNDING" },
+        select: { foundingNumber: true },
+        orderBy: { foundingNumber: "asc" },
+      });
+      if (takenSeats.length >= FOUNDING_SEAT_LIMIT) {
+        return NextResponse.json(
+          { error: "Founding member seats are sold out (50/50)" },
+          { status: 409 }
+        );
+      }
+      const taken = new Set(takenSeats.map((u) => u.foundingNumber));
+      for (let n = 1; n <= FOUNDING_SEAT_LIMIT; n++) {
+        if (!taken.has(n)) { foundingNumber = n; break; }
+      }
     }
 
     if (!process.env.CLOVER_PRIVATE_KEY || !process.env.NEXT_PUBLIC_CLOVER_MERCHANT_ID) {
       return NextResponse.json({ error: "Payment service not configured" }, { status: 503 });
     }
 
-    // Charge Clover
     const currency = process.env.CLOVER_CURRENCY ?? "usd";
     const idempotencyKey = randomUUID();
     const clientIp =
@@ -82,10 +103,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: message }, { status: 402 });
     }
 
-    // Payment succeeded — create user + payment record atomically
     const hashedPassword = await hash(password, 10);
-    const expiresAt = new Date();
-    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+    const expiresAt =
+      tierId === "FOUNDING"
+        ? null
+        : (() => { const d = new Date(); d.setFullYear(d.getFullYear() + 1); return d; })();
 
     await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
@@ -95,6 +117,7 @@ export async function POST(request: NextRequest) {
           password: hashedPassword,
           membershipTier: tierId,
           membershipExpiresAt: expiresAt,
+          ...(tierId === "FOUNDING" && foundingNumber !== null ? { foundingNumber } : {}),
         },
       });
 

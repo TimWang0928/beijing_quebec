@@ -1074,6 +1074,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offse
 .tier-none       { background: rgba(107,114,128,0.15); border: 1px solid rgba(107,114,128,0.3); color: rgba(255,255,255,0.5); }
 .tier-regular    { background: rgba(59,130,246,0.15);  border: 1px solid rgba(59,130,246,0.35);  color: #93c5fd; }
 .tier-family     { background: rgba(168,85,247,0.15);  border: 1px solid rgba(168,85,247,0.35);  color: #d8b4fe; }
+.tier-founding   { background: rgba(212,175,55,0.18);  border: 1px solid rgba(212,175,55,0.5);   color: var(--gold2); }
 .tier-youth      { background: rgba(16,185,129,0.15);  border: 1px solid rgba(16,185,129,0.35);  color: #6ee7b7; }
 .tier-honorary   { background: rgba(212,175,55,0.15);  border: 1px solid rgba(212,175,55,0.35);  color: var(--gold2); }
 .tier-supporting { background: rgba(251,146,60,0.15);  border: 1px solid rgba(251,146,60,0.35);  color: #fdba74; }
@@ -1485,6 +1486,122 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offse
   color: #fff !important;
 }
 
+/* Founding member seats badge */
+.founding-seats-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: rgba(212,175,55,0.12);
+  border: 1px solid rgba(212,175,55,0.35);
+  color: var(--gold2);
+  margin-bottom: 8px;
+}
+.founding-seats-soldout {
+  background: rgba(239,68,68,0.12);
+  border-color: rgba(239,68,68,0.35);
+  color: #fca5a5;
+}
+
+/* Disabled tier card */
+.tier-card-disabled { opacity: 0.55; cursor: not-allowed; }
+.tier-select-btn-disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Recurrence label beside price */
+.tier-price-recurrence { font-size: 12px; font-weight: 400; opacity: .7; }
+
+/* Membership landing page — tier pricing cards */
+.membership-tier-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 900px) { .membership-tier-cards { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .membership-tier-cards { grid-template-columns: 1fr; } }
+
+.membership-tier-card {
+  background: var(--navy);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: transform .2s, box-shadow .2s;
+}
+.membership-tier-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+}
+.membership-tier-card-featured {
+  border-color: rgba(212,175,55,0.45);
+  box-shadow: 0 0 0 1px rgba(212,175,55,0.25), 0 8px 32px rgba(0,0,0,0.3);
+}
+.membership-tier-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.membership-tier-icon { font-size: 28px; }
+.membership-tier-price {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+.membership-tier-price-amount {
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+}
+.membership-tier-price-period {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+}
+.membership-tier-limit {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: rgba(212,175,55,0.12);
+  border: 1px solid rgba(212,175,55,0.35);
+  color: var(--gold2);
+  align-self: flex-start;
+}
+.membership-tier-benefits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+.membership-tier-benefits li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.5;
+}
+.membership-tier-cta {
+  width: 100%;
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* Profile — founding member number */
+.profile-founding-number {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gold2);
+  letter-spacing: .05em;
+}
+
 /* Payment section */
 .membership-apply-payment {
   padding: 0 0 80px;
@@ -1873,6 +1990,144 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offse
   color: var(--muted);
   margin: 0 0 12px;
 }
+
+/* ── Register tier selection step ─────────────────────────────────────────── */
+.register-tier-wrapper {
+  align-items: flex-start;
+  justify-content: center;
+  padding: 120px 32px 80px; /* 120px top = clears the fixed navbar */
+  background: var(--cream);
+}
+.register-tier-page {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+}
+.register-tier-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.register-tier-header .auth-form-title {
+  font-size: 2.2rem;
+  color: var(--navy);
+}
+.register-tier-header .auth-form-eyebrow {
+  color: var(--red2);
+}
+
+.register-tier-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+@media (max-width: 860px) { .register-tier-cards { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .register-tier-cards { grid-template-columns: 1fr; } }
+
+.register-tier-card {
+  background: #fff;
+  border: 2px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  cursor: pointer;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+  position: relative;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.register-tier-card:hover:not(.tier-card-disabled) {
+  border-color: var(--gold);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+}
+.register-tier-card-selected {
+  border-color: var(--gold) !important;
+  background: #fffdf5 !important;
+  box-shadow: 0 0 0 3px rgba(212,175,55,0.18), 0 12px 36px rgba(0,0,0,0.12) !important;
+}
+.register-tier-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.register-tier-card-icon { font-size: 24px; }
+.register-tier-card-check {
+  margin-left: auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(212,175,55,0.4);
+}
+.register-tier-card-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+/* benefits inside tier card — override dark-mode color */
+.register-tier-card .tier-card-benefits li,
+.register-tier-card-benefits li {
+  color: var(--text) !important;
+}
+.register-tier-card .tier-benefit-check {
+  color: var(--gold) !important;
+}
+.register-tier-card-benefits {
+  padding-left: 0 !important;
+}
+.register-tier-card-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+/* Founding seats badge in light card */
+.register-tier-card .founding-seats-badge {
+  background: rgba(212,175,55,0.1);
+  border-color: rgba(212,175,55,0.4);
+  color: #92750a;
+}
+.register-tier-card .founding-seats-soldout {
+  background: rgba(239,68,68,0.08);
+  border-color: rgba(239,68,68,0.3);
+  color: #b91c1c;
+}
+/* price value in light card */
+.register-tier-card .tier-price-value {
+  color: var(--navy) !important;
+  font-size: 20px;
+  font-weight: 700;
+}
+.register-tier-card .tier-price-recurrence {
+  color: var(--muted) !important;
+  font-size: 13px;
+}
+/* Tier badge overrides for light card background */
+.register-tier-card .tier-regular  { background: rgba(59,130,246,0.1);  border-color: rgba(59,130,246,0.4);  color: #2563eb; }
+.register-tier-card .tier-family   { background: rgba(168,85,247,0.1);  border-color: rgba(168,85,247,0.4);  color: #7c3aed; }
+.register-tier-card .tier-founding { background: rgba(212,175,55,0.12); border-color: rgba(212,175,55,0.5);  color: #92750a; }
+
+/* Back-to-tiers link inside the tier summary box */
+.register-back-to-tiers {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  margin-top: 10px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.register-back-to-tiers:hover { color: var(--gold); }
 
 /* ============================================================
    PROFILE — payment history section
