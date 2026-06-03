@@ -1607,14 +1607,15 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offse
   padding: 0 0 80px;
 }
 .payment-card {
-  background: var(--navy);
+  background: #fff;
   border-radius: 20px;
   padding: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 40px;
-  border: 1px solid rgba(212,175,55,0.2);
+  border: 1px solid rgba(212,175,55,0.3);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
 }
 .payment-card-left { flex: 1; display: flex; flex-direction: column; gap: 16px; }
 .payment-card-right { display: flex; flex-direction: column; gap: 16px; align-items: flex-end; flex-shrink: 0; }
@@ -1683,6 +1684,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offse
 /* ─── Clover Payment Form (redesign) ───────────────────── */
 .cp-wrap {
   max-width: 540px;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -1870,6 +1872,24 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offse
 }
 
 /* ============================================================
+   REGISTER PAYMENT — light overrides (CP component is dark by default)
+   ============================================================ */
+.register-pay-page .cp-summary-label { color: var(--muted); }
+.register-pay-page .cp-summary-value { color: var(--navy); }
+.register-pay-page .cp-form-card {
+  background: transparent;
+  border: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+.register-pay-page .cp-title { color: var(--navy); }
+.register-pay-page .cp-label { color: var(--muted); }
+.register-pay-page .cp-back-btn { color: var(--muted); }
+.register-pay-page .cp-back-btn:hover { color: var(--navy); }
+.register-pay-page .cp-secure { color: var(--muted); }
+.register-pay-page .cp-error { color: #b91c1c; background: rgba(239,68,68,0.07); border-color: rgba(239,68,68,0.25); }
+
+/* ============================================================
    APPLY PAGE — dark section when in payment step
    ============================================================ */
 .membership-apply-payment.is-pay-step {
@@ -1881,10 +1901,10 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offse
    REGISTER FORM — pay-before-register
    ============================================================ */
 
-/* Payment step: full-page dark wrapper */
+/* Payment step: matches the rest of the auth/register pages */
 .register-pay-page {
   min-height: 100vh;
-  background: var(--navy-dark, #0d1117);
+  background: var(--cream);
   display: flex;
   align-items: center;
   justify-content: center;
