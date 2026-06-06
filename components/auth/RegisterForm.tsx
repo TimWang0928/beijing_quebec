@@ -428,8 +428,13 @@ export default function RegisterForm() {
               <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} placeholder={c.namePlaceholder} className="auth-input" required autoComplete="name" />
             </div>
             <div className="auth-field-group">
-              <label htmlFor="email" className="auth-label">{c.email}</label>
+              <label htmlFor="email" className="auth-label">
+                {c.email} <span className="auth-required">*</span>
+              </label>
               <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} placeholder={c.emailPlaceholder} className="auth-input" required autoComplete="email" />
+              <p className="auth-field-hint">
+                {lang === "zh" ? "每个邮箱仅限注册一个会员账户" : lang === "fr" ? "Une seule adhésion par adresse e-mail" : "One membership per email address"}
+              </p>
             </div>
             <div className="auth-field-group">
               <label htmlFor="password" className="auth-label">{c.password}</label>
