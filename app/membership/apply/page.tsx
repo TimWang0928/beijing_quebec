@@ -9,6 +9,17 @@ import CloverPayment from "@/components/CloverPayment";
 
 const TIERS = [
   {
+    id: "TEST",
+    icon: "🧪",
+    price: 1, // $0.01 CAD — test only
+    recurring: false,
+    fr: { name: "[TEST] $0.01", desc: "Paiement de test — 1 cent seulement." },
+    zh: { name: "[测试] $0.01", desc: "仅用于测试支付流程，金额为1分钱。" },
+    en: { name: "[TEST] $0.01", desc: "Test payment only — charges 1 cent." },
+    color: "tier-regular",
+    accentColor: "#d1d5db",
+  },
+  {
     id: "REGULAR",
     icon: "👤",
     price: 3600, // $36.00 CAD/year
@@ -64,6 +75,7 @@ const PAGE_CONTENT = {
     successDesc: "Merci ! Votre adhésion a bien été activée. Vous pouvez maintenant profiter de tous les avantages.",
     viewProfileBtn: "Voir mon profil",
     benefits: {
+      TEST: ["Paiement de test — aucun avantage réel"],
       REGULAR: [
         "Participation à toutes les activités de l'association",
         "Informations et ressources communautaires",
@@ -103,6 +115,7 @@ const PAGE_CONTENT = {
     successDesc: "感谢您！您的会员资格已成功激活，即刻享受所有会员权益。",
     viewProfileBtn: "查看我的主页",
     benefits: {
+      TEST: ["仅用于测试，无实际权益"],
       REGULAR: [
         "参与协会举办的各类活动",
         "获取社区资讯与资源",
@@ -142,6 +155,7 @@ const PAGE_CONTENT = {
     successDesc: "Thank you! Your membership has been successfully activated. You can now enjoy all member benefits.",
     viewProfileBtn: "View My Profile",
     benefits: {
+      TEST: ["Test payment only — no real benefits"],
       REGULAR: [
         "Participate in all association activities",
         "Community news and resources",

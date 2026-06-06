@@ -89,7 +89,9 @@ img{display:block; max-width: 100%; height: auto;}
 .nav-link-login{color:rgba(255,255,255,0.75);border:1px solid rgba(255,255,255,0.2)}
 .nav-link-login:hover{color:#fff;border-color:rgba(255,255,255,0.5); background: rgba(255,255,255,0.05);}
 .nav-link-register{background:var(--gold);color:var(--navy);border:1px solid var(--gold)}
-.nav-link-register:hover{background:var(--gold2);border-color:var(--gold2); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);}
+.nav-link-register:hover{background:var(--gold2);border-color:var(--gold2)}
+.nav-register-desktop{display:flex;align-items:center}
+@media(max-width:900px){.nav-register-desktop{display:none}}
 
 /* User Menu */
 .user-menu-container{position:relative}

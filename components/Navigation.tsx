@@ -126,11 +126,16 @@ export default function Navigation() {
               )}
             </div>
           ) : (
-            <div className="auth-links">
-              <Link href="/auth/login" className="nav-link nav-link-login">
-                {lang === "fr" ? "Connexion" : lang === "zh" ? "登录" : "Login"}
+            <>
+              <div className="auth-links">
+                <Link href="/auth/login" className="nav-link nav-link-login">
+                  {lang === "fr" ? "Connexion" : lang === "zh" ? "登录" : "Login"}
+                </Link>
+              </div>
+              <Link href="/auth/register" className="nav-link nav-link-register nav-register-desktop">
+                {lang === "fr" ? "S'inscrire" : lang === "zh" ? "注册" : "Sign Up"}
               </Link>
-            </div>
+            </>
           )}
 
           <button

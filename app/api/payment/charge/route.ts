@@ -6,6 +6,7 @@ import { randomUUID } from "crypto";
 
 // Server-authoritative price table — never trust the client for the amount
 const TIER_PRICES: Record<string, number> = {
+  TEST:     1,      // $0.01 CAD — test only
   REGULAR:  3600,   // $36.00 CAD/year
   FAMILY:   6600,   // $66.00 CAD/year
   FOUNDING: 36500,  // $365.00 CAD one-time
