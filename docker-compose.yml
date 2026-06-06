@@ -28,6 +28,14 @@ services:
       NEXT_TELEMETRY_DISABLED: "1"
       GOOGLE_ID: ${GOOGLE_ID:-}
       GOOGLE_SECRET: ${GOOGLE_SECRET:-}
+      # Server-side Clover vars (read at runtime by API routes).
+      # NEXT_PUBLIC_CLOVER_PUBLIC_KEY is intentionally NOT here: it is baked
+      # into the client bundle at build time via Dockerfile build args.
+      CLOVER_PRIVATE_KEY: ${CLOVER_PRIVATE_KEY:?set CLOVER_PRIVATE_KEY}
+      CLOVER_CURRENCY: ${CLOVER_CURRENCY:-usd}
+      CLOVER_WEBHOOK_AUTH_CODE: ${CLOVER_WEBHOOK_AUTH_CODE:-}
+      # Merchant ID is needed server-side too (charge call):
+      NEXT_PUBLIC_CLOVER_MERCHANT_ID: ${NEXT_PUBLIC_CLOVER_MERCHANT_ID:?set NEXT_PUBLIC_CLOVER_MERCHANT_ID}
 
   nginx:
     image: nginx:1.27-alpine

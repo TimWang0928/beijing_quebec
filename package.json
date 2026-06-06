@@ -8,8 +8,8 @@
     "db:migrate": "prisma migrate deploy",
     "start": "next start",
     "lint": "eslint",
-    "build:image": "docker build -t beijing-web:latest .",
-    "docker:publish": "docker buildx build --platform ${DOCKER_PLATFORMS:-linux/amd64,linux/arm64} -t ${DOCKERHUB_IMAGE:-timwangdocker/beijing-web:latest} --push .",
+    "build:image": "export $(grep -v '^#' .env.local | xargs) && docker build --build-arg NEXT_PUBLIC_CLOVER_PUBLIC_KEY=${NEXT_PUBLIC_CLOVER_PUBLIC_KEY:?set NEXT_PUBLIC_CLOVER_PUBLIC_KEY in .env.local} --build-arg NEXT_PUBLIC_CLOVER_MERCHANT_ID=${NEXT_PUBLIC_CLOVER_MERCHANT_ID:?set NEXT_PUBLIC_CLOVER_MERCHANT_ID in .env.local} -t beijing-web:latest .",
+    "docker:publish": "export $(grep -v '^#' .env.local | xargs) && docker buildx build --platform ${DOCKER_PLATFORMS:-linux/amd64,linux/arm64} --build-arg NEXT_PUBLIC_CLOVER_PUBLIC_KEY=${NEXT_PUBLIC_CLOVER_PUBLIC_KEY:?set NEXT_PUBLIC_CLOVER_PUBLIC_KEY in .env.local} --build-arg NEXT_PUBLIC_CLOVER_MERCHANT_ID=${NEXT_PUBLIC_CLOVER_MERCHANT_ID:?set NEXT_PUBLIC_CLOVER_MERCHANT_ID in .env.local} -t ${DOCKERHUB_IMAGE:-timwangdocker/beijing-web:latest} --push .",
     "ssl:issue": "docker compose run --rm certbot certonly --webroot -w /var/www/certbot --email ${CERTBOT_EMAIL:?set CERTBOT_EMAIL} --agree-tos --no-eff-email -d ${CERTBOT_DOMAIN:?set CERTBOT_DOMAIN} -d ${CERTBOT_WWW_DOMAIN:?set CERTBOT_WWW_DOMAIN}",
     "ssl:renew": "docker compose run --rm certbot renew --webroot -w /var/www/certbot && docker compose restart nginx",
     "update": "git pull && docker compose --env-file .env.local up -d"

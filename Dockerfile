@@ -18,6 +18,14 @@ RUN npm ci && npx prisma generate
 
 FROM deps AS builder
 
+# NEXT_PUBLIC_* vars are inlined into the client bundle at build time,
+# so they MUST be available during `npm run build` — runtime env (compose)
+# can never set them for already-compiled client code.
+ARG NEXT_PUBLIC_CLOVER_PUBLIC_KEY
+ARG NEXT_PUBLIC_CLOVER_MERCHANT_ID
+ENV NEXT_PUBLIC_CLOVER_PUBLIC_KEY=$NEXT_PUBLIC_CLOVER_PUBLIC_KEY
+ENV NEXT_PUBLIC_CLOVER_MERCHANT_ID=$NEXT_PUBLIC_CLOVER_MERCHANT_ID
+
 COPY . .
 
 RUN npm run build
