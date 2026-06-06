@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useToast } from "@/context/ToastContext";
 import CloverPayment from "@/components/CloverPayment";
@@ -231,10 +231,16 @@ type Step = "tier" | "info" | "pay";
 export default function RegisterForm() {
   const { lang } = useLanguage();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { showToast } = useToast();
 
+  const initialTier = (() => {
+    const t = searchParams.get("tier")?.toUpperCase();
+    return TIERS.find((tier) => tier.id === t) ? t! : "REGULAR";
+  })();
+
   const [step, setStep] = useState<Step>("tier");
-  const [selectedTierId, setSelectedTierId] = useState<string>("REGULAR");
+  const [selectedTierId, setSelectedTierId] = useState<string>(initialTier);
   const [foundingSeatsLeft, setFoundingSeatsLeft] = useState<number | null>(null);
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", password: "", confirm: "", phone: "", wechat: "" });

@@ -6,6 +6,8 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
+const TIER_IDS = ["REGULAR", "FAMILY", "FOUNDING"];
+
 export default function MembershipPage() {
   const { lang } = useLanguage();
   const { status } = useSession();
@@ -17,6 +19,14 @@ export default function MembershipPage() {
       router.push("/membership/apply");
     } else {
       router.push("/auth/register?callbackUrl=/membership/apply");
+    }
+  };
+
+  const handleSelectTier = (tierId: string) => {
+    if (status === "authenticated") {
+      router.push(`/membership/apply?tier=${tierId}`);
+    } else {
+      router.push(`/auth/register?tier=${tierId}`);
     }
   };
 
@@ -54,8 +64,13 @@ export default function MembershipPage() {
               <div className="gold-line"></div>
               <h2 className="sec-title-zh">{c.mbTypTitle}</h2>
               <div style={{ marginTop: "24px", display: "grid", gap: "10px" }}>
-                {c.memberTypes.map((memberType) => (
-                  <div key={memberType} className="member-type-pill">
+                {c.memberTypes.map((memberType, index) => (
+                  <div
+                    key={memberType}
+                    className="member-type-pill"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleSelectTier(TIER_IDS[index])}
+                  >
                     {memberType}
                   </div>
                 ))}
@@ -83,7 +98,8 @@ export default function MembershipPage() {
             </p>
             <button onClick={handleJoin} className="btn-gold">
               {c.mbJoinBtn}
-            </button>          </div>
+            </button>
+          </div>
         </div>
       </section>
     </main>
