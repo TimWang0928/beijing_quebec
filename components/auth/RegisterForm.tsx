@@ -11,29 +11,6 @@ import CloverPayment from "@/components/CloverPayment";
 // ─── Tier definitions ──────────────────────────────────────────────────────────
 const TIERS = [
   {
-    id: "TEST",
-    icon: "🧪",
-    price: 1,
-    recurring: false,
-    color: "tier-regular",
-    accentColor: "#d1d5db",
-    fr: {
-      name: "[TEST] $0.01",
-      desc: "Paiement de test — 1 cent seulement.",
-      benefits: ["Paiement de test — aucun avantage réel"],
-    },
-    zh: {
-      name: "[测试] $0.01",
-      desc: "仅用于测试支付流程，金额为1分钱。",
-      benefits: ["仅用于测试，无实际权益"],
-    },
-    en: {
-      name: "[TEST] $0.01",
-      desc: "Test payment only — charges 1 cent.",
-      benefits: ["Test payment only — no real benefits"],
-    },
-  },
-  {
     id: "REGULAR",
     icon: "👤",
     price: 3600,
