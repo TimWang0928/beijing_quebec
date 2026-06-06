@@ -179,7 +179,7 @@ export default function MembershipApplyPage() {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/auth/login?callbackUrl=/membership/apply");
+      router.push("/auth/register?callbackUrl=/membership/apply");
     }
   }, [status, router]);
 

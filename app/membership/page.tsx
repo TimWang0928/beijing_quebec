@@ -16,7 +16,7 @@ export default function MembershipPage() {
     if (status === "authenticated") {
       router.push("/membership/apply");
     } else {
-      router.push("/auth/login?callbackUrl=/membership/apply");
+      router.push("/auth/register?callbackUrl=/membership/apply");
     }
   };
 
