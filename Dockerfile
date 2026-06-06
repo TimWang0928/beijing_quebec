@@ -35,4 +35,4 @@ COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npm run db:migrate && npm run start -- --hostname 0.0.0.0"]
+CMD ["sh", "-c", "npm run db:migrate && exec npm run start -- --hostname 0.0.0.0"]
