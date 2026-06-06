@@ -13,9 +13,9 @@ const TIERS = [
     icon: "👤",
     price: 3600, // $36.00 CAD/year
     recurring: true,
-    fr: { name: "Membre ordinaire", desc: "Devenez membre de l'Association des Pékinois du Québec et participez à nos activités culturelles et communautaires." },
+    fr: { name: "Membre communautaire", desc: "Devenez membre de l'Association des Pékinois du Québec et participez à nos activités culturelles et communautaires." },
     zh: { name: "普通会员", desc: "成为魁北克北京同乡会正式会员，与旅加同乡共叙乡情，参与协会各项文化与社区活动。" },
-    en: { name: "Regular Member", desc: "Become a member of the Beijing Association of Quebec and join our cultural and community activities." },
+    en: { name: "Community Member", desc: "Become a member of the Beijing Association of Quebec and join our cultural and community activities." },
     color: "tier-regular",
     accentColor: "#93c5fd",
   },

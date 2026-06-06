@@ -18,7 +18,7 @@ const TIERS = [
     color: "tier-regular",
     accentColor: "#93c5fd",
     fr: {
-      name: "Membre ordinaire",
+      name: "Membre communautaire",
       desc: "Accès à toutes les activités et à la communauté des Pékinois du Québec.",
       benefits: ["Toutes les activités de l'association", "Informations communautaires", "Accès aux infos exclusives membres"],
     },
@@ -28,7 +28,7 @@ const TIERS = [
       benefits: ["参与协会举办的各类活动", "获取社区资讯与资源", "享受会员专属信息"],
     },
     en: {
-      name: "Regular Member",
+      name: "Community Member",
       desc: "Join all activities and the Beijing community of Quebec.",
       benefits: ["All association activities", "Community news & resources", "Member-exclusive info"],
     },
