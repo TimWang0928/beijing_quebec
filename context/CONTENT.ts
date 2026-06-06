@@ -315,7 +315,7 @@ export const CONTENT: Record<string, Translation> = {
     benefits: ["参与协会举办的各类活动", "享有活动优先报名权及优惠", "职业网络与社区资源获取渠道", "参加会员大会，享有建议和表决权", "获得社区信息与服务支持"],
     mbTypLabel: "会员类别", mbTypTitle: "会员分类",
     mbTypList: "",
-    memberTypes: ["普通会员", "家庭会员", "创始会员"],
+    memberTypes: ["社区会员", "家庭会员", "创始会员"],
     mbJoinLabel: "加入我们", mbJoinTitle: "立即申请入会",
     mbJoinDesc: "凡年满十八周岁、认同协会宗旨、愿意遵守章程者，均可申请入会。欢迎联系我们了解会费与申请流程。",
     mbJoinBtn: "申请入会",

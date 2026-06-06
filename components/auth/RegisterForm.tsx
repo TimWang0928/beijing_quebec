@@ -46,7 +46,7 @@ const TIERS = [
       benefits: ["Toutes les activités de l'association", "Informations communautaires", "Accès aux infos exclusives membres"],
     },
     zh: {
-      name: "普通会员",
+      name: "社区会员",
       desc: "参与协会各项文化与社区活动，融入旅加北京同乡圈。",
       benefits: ["参与协会举办的各类活动", "获取社区资讯与资源", "享受会员专属信息"],
     },
@@ -71,7 +71,7 @@ const TIERS = [
     zh: {
       name: "家庭会员",
       desc: "以家庭为单位入会，全家共享所有权益。",
-      benefits: ["包含全部普通会员权益", "全家成员共享活动参与权", "家庭身份统一管理"],
+      benefits: ["包含全部社区会员权益", "全家成员共享活动参与权", "家庭身份统一管理"],
     },
     en: {
       name: "Family Member",

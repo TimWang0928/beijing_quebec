@@ -25,7 +25,7 @@ const TIERS = [
     price: 3600, // $36.00 CAD/year
     recurring: true,
     fr: { name: "Membre communautaire", desc: "Devenez membre de l'Association des Pékinois du Québec et participez à nos activités culturelles et communautaires." },
-    zh: { name: "普通会员", desc: "成为魁北克北京同乡会正式会员，与旅加同乡共叙乡情，参与协会各项文化与社区活动。" },
+    zh: { name: "社区会员", desc: "成为魁北克北京同乡会正式会员，与旅加同乡共叙乡情，参与协会各项文化与社区活动。" },
     en: { name: "Community Member", desc: "Become a member of the Beijing Association of Quebec and join our cultural and community activities." },
     color: "tier-regular",
     accentColor: "#93c5fd",
@@ -36,7 +36,7 @@ const TIERS = [
     price: 6600, // $66.00 CAD/year
     recurring: true,
     fr: { name: "Membre famille", desc: "Toute la famille profite des avantages membres. Une adhésion unique pour tous les membres du foyer." },
-    zh: { name: "家庭会员", desc: "以家庭为单位入会，全家共享协会活动参与权及所有普通会员权益。" },
+    zh: { name: "家庭会员", desc: "以家庭为单位入会，全家共享协会活动参与权及所有社区会员权益。" },
     en: { name: "Family Member", desc: "One membership covers the whole family. All household members enjoy full activity participation rights." },
     color: "tier-family",
     accentColor: "#86efac",
@@ -122,7 +122,7 @@ const PAGE_CONTENT = {
         "享受会员专属信息",
       ],
       FAMILY: [
-        "包含全部普通会员权益",
+        "包含全部社区会员权益",
         "全家成员共享活动参与权",
         "家庭身份统一管理",
       ],

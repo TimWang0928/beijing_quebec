@@ -35,7 +35,7 @@ interface PaymentRecord {
 
 const TIER_LABELS: Record<string, { fr: string; zh: string; en: string; color: string }> = {
   NONE:       { fr: "Aucun",             zh: "无",      en: "None",            color: "tier-none" },
-  REGULAR:    { fr: "Membre communautaire",  zh: "普通会员", en: "Community Member", color: "tier-regular" },
+  REGULAR:    { fr: "Membre communautaire",  zh: "社区会员", en: "Community Member", color: "tier-regular" },
   FAMILY:     { fr: "Membre famille",    zh: "家庭会员", en: "Family Member",   color: "tier-family" },
   FOUNDING:   { fr: "Membre fondateur", zh: "创始会员", en: "Founding Member", color: "tier-founding" },
 };
