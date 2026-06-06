@@ -11,6 +11,29 @@ import CloverPayment from "@/components/CloverPayment";
 // ─── Tier definitions ──────────────────────────────────────────────────────────
 const TIERS = [
   {
+    id: "TEST",
+    icon: "🧪",
+    price: 1,
+    recurring: false,
+    color: "tier-regular",
+    accentColor: "#d1d5db",
+    fr: {
+      name: "[TEST] $0.01",
+      desc: "Paiement de test — 1 cent seulement.",
+      benefits: ["Paiement de test — aucun avantage réel"],
+    },
+    zh: {
+      name: "[测试] $0.01",
+      desc: "仅用于测试支付流程，金额为1分钱。",
+      benefits: ["仅用于测试，无实际权益"],
+    },
+    en: {
+      name: "[TEST] $0.01",
+      desc: "Test payment only — charges 1 cent.",
+      benefits: ["Test payment only — no real benefits"],
+    },
+  },
+  {
     id: "REGULAR",
     icon: "👤",
     price: 3600,
@@ -118,6 +141,10 @@ const CONTENT = {
     emailTaken: "Cette adresse e-mail est déjà utilisée.",
     checkingEmail: "Vérification…",
     backToTiers: "← Modifier le niveau",
+    phone: "Téléphone",
+    phonePlaceholder: "Optionnel",
+    wechat: "WeChat",
+    wechatPlaceholder: "Identifiant WeChat (optionnel)",
   },
   zh: {
     title: "加入同乡会",
@@ -153,6 +180,10 @@ const CONTENT = {
     emailTaken: "该邮箱已被注册。",
     checkingEmail: "检查中…",
     backToTiers: "← 修改档位",
+    phone: "手机号",
+    phonePlaceholder: "选填",
+    wechat: "微信号",
+    wechatPlaceholder: "微信号（选填）",
   },
   en: {
     title: "Join the Association",
@@ -188,6 +219,10 @@ const CONTENT = {
     emailTaken: "This email address is already registered.",
     checkingEmail: "Checking…",
     backToTiers: "← Change tier",
+    phone: "Phone",
+    phonePlaceholder: "Optional",
+    wechat: "WeChat",
+    wechatPlaceholder: "WeChat ID (optional)",
   },
 };
 
@@ -202,7 +237,7 @@ export default function RegisterForm() {
   const [selectedTierId, setSelectedTierId] = useState<string>("REGULAR");
   const [foundingSeatsLeft, setFoundingSeatsLeft] = useState<number | null>(null);
   const [checkingEmail, setCheckingEmail] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", password: "", confirm: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", password: "", confirm: "", phone: "", wechat: "" });
 
   const c = CONTENT[lang as keyof typeof CONTENT] ?? CONTENT.fr;
 
@@ -239,7 +274,7 @@ export default function RegisterForm() {
     const res = await fetch("/api/auth/register-with-payment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: formData.name, email: formData.email, password: formData.password, tierId: selectedTierId, token }),
+      body: JSON.stringify({ name: formData.name, email: formData.email, password: formData.password, tierId: selectedTierId, token, phone: formData.phone, wechat: formData.wechat }),
     });
     if (!res.ok) {
       const d = await res.json();
@@ -403,6 +438,14 @@ export default function RegisterForm() {
             <div className="auth-field-group">
               <label htmlFor="confirm" className="auth-label">{c.confirm}</label>
               <input type="password" id="confirm" name="confirm" value={formData.confirm} onChange={handleChange} placeholder={c.confirmPlaceholder} className="auth-input" required autoComplete="new-password" />
+            </div>
+            <div className="auth-field-group">
+              <label htmlFor="phone" className="auth-label">{c.phone} <span className="auth-label-optional">({lang === "zh" ? "选填" : lang === "fr" ? "optionnel" : "optional"})</span></label>
+              <input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleChange} placeholder={c.phonePlaceholder} className="auth-input" autoComplete="tel" />
+            </div>
+            <div className="auth-field-group">
+              <label htmlFor="wechat" className="auth-label">{c.wechat} <span className="auth-label-optional">({lang === "zh" ? "选填" : lang === "fr" ? "optionnel" : "optional"})</span></label>
+              <input type="text" id="wechat" name="wechat" value={formData.wechat} onChange={handleChange} placeholder={c.wechatPlaceholder} className="auth-input" />
             </div>
 
             <button type="submit" className="auth-submit-btn" disabled={checkingEmail}>

@@ -26,6 +26,8 @@ export async function GET(req: NextRequest) {
       membershipExpiresAt: true,
       foundingNumber: true,
       emailVerified: true,
+      phone: true,
+      wechat: true,
       createdAt: true,
       updatedAt: true,
     },

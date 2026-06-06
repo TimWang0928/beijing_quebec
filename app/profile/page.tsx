@@ -17,6 +17,8 @@ interface UserProfile {
   membershipExpiresAt: string | null;
   foundingNumber: number | null;
   emailVerified: string | null;
+  phone: string | null;
+  wechat: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -175,9 +177,8 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
-      setLoading(true);
-      // 添加小延迟确保会话完全就绪
       const timer = setTimeout(() => {
+        setLoading(true);
         fetch("/api/user/profile")
           .then((r) => {
             if (!r.ok) {
@@ -360,6 +361,18 @@ export default function ProfilePage() {
                   </span>
                 </div>
               </div>
+              {profile.phone && (
+                <div className="profile-field">
+                  <span className="profile-field-label">{lang === "zh" ? "手机号" : lang === "fr" ? "Téléphone" : "Phone"}</span>
+                  <span className="profile-field-value">{profile.phone}</span>
+                </div>
+              )}
+              {profile.wechat && (
+                <div className="profile-field">
+                  <span className="profile-field-label">{lang === "zh" ? "微信号" : "WeChat"}</span>
+                  <span className="profile-field-value">{profile.wechat}</span>
+                </div>
+              )}
             </div>
           </section>
 

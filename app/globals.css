@@ -800,6 +800,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offse
   color: var(--muted);
   margin-bottom: 8px;
 }
+.auth-label-optional { font-size: 11px; font-weight: 400; text-transform: none; letter-spacing: 0; opacity: 0.6; }
 .auth-label-row {
   display: flex;
   align-items: center;

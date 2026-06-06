@@ -18,6 +18,8 @@ model User {
   membershipTier      String    @default("NONE")  // NONE | REGULAR | FAMILY | FOUNDING
   membershipExpiresAt DateTime?
   foundingNumber      Int?      // 1–50, assigned only for FOUNDING tier
+  phone               String?
+  wechat              String?
   accounts            Account[]
   sessions      Session[]
   payments      Payment[]

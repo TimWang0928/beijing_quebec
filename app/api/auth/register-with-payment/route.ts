@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
 
 const TIER_PRICES: Record<string, number> = {
+  TEST:     1,      // $0.01 CAD — test only
   REGULAR:  3600,   // $36.00 CAD/year
   FAMILY:   6600,   // $66.00 CAD/year
   FOUNDING: 36500,  // $365.00 CAD one-time
@@ -18,7 +19,7 @@ const CLOVER_API_BASE =
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, password, tierId, token } = await request.json();
+    const { name, email, password, tierId, token, phone, wechat } = await request.json();
 
     if (!name || !email || !password || !tierId || !token) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -118,6 +119,8 @@ export async function POST(request: NextRequest) {
           membershipTier: tierId,
           membershipExpiresAt: expiresAt,
           ...(tierId === "FOUNDING" && foundingNumber !== null ? { foundingNumber } : {}),
+          ...(phone ? { phone } : {}),
+          ...(wechat ? { wechat } : {}),
         },
       });
 
